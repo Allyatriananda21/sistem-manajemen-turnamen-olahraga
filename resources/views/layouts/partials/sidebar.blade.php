@@ -107,6 +107,23 @@
                 </svg>
                 <span class="text-sm">Laporan</span>
             </a>
+
+            <!-- Manajemen User (admin only) -->
+            @auth
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.users') }}"
+                       wire:navigate
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+                       {{ request()->routeIs('admin.users')
+                          ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
+                        <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span class="text-sm">Manajemen User</span>
+                    </a>
+                @endif
+            @endauth
         </nav>
     </div>
 

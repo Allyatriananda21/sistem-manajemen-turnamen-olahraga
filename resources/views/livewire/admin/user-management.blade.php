@@ -1,0 +1,159 @@
+<div class="space-y-6">
+
+    {{-- Page Header --}}
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <flux:heading size="xl">Manajemen User</flux:heading>
+            <flux:text class="mt-1 text-slate-500">Kelola akun panitia, wasit, dan kasir event.</flux:text>
+        </div>
+        <flux:button wire:click="openCreateModal" variant="primary" icon="plus">
+            Tambah User
+        </flux:button>
+    </div>
+
+    {{-- Search --}}
+    <flux:input
+        wire:model.live.debounce.300ms="search"
+        placeholder="Cari nama atau email..."
+        icon="magnifying-glass"
+        class="max-w-sm"
+    />
+
+    {{-- Users Table --}}
+    <flux:card class="overflow-hidden p-0">
+        <flux:table>
+            <flux:columns>
+                <flux:column>Nama</flux:column>
+                <flux:column>Email</flux:column>
+                <flux:column>Role</flux:column>
+                <flux:column>Status</flux:column>
+                <flux:column class="text-right">Aksi</flux:column>
+            </flux:columns>
+
+            <flux:rows>
+                @forelse ($users as $user)
+                    <flux:row wire:key="user-{{ $user->id }}">
+                        {{-- Nama --}}
+                        <flux:cell>
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ $user->name }}</p>
+                                    @if ($user->id === auth()->id())
+                                        <flux:badge size="sm" color="blue" inset="top bottom">Anda</flux:badge>
+                                    @endif
+                                </div>
+                            </div>
+                        </flux:cell>
+
+                        {{-- Email --}}
+                        <flux:cell>
+                            <flux:text class="text-sm text-slate-600 dark:text-slate-400">{{ $user->email }}</flux:text>
+                        </flux:cell>
+
+                        {{-- Role (editable select) --}}
+                        <flux:cell>
+                            <flux:select
+                                wire:change="updateRole({{ $user->id }}, $event.target.value)"
+                                size="sm"
+                                :disabled="$user->id === auth()->id()"
+                                class="w-28"
+                            >
+                                <flux:option value="admin" :selected="$user->role === 'admin'">Admin</flux:option>
+                                <flux:option value="wasit" :selected="$user->role === 'wasit'">Wasit</flux:option>
+                                <flux:option value="kasir" :selected="$user->role === 'kasir'">Kasir</flux:option>
+                            </flux:select>
+                        </flux:cell>
+
+                        {{-- Status aktif --}}
+                        <flux:cell>
+                            @if ($user->is_active)
+                                <flux:badge color="green">Aktif</flux:badge>
+                            @else
+                                <flux:badge color="red">Nonaktif</flux:badge>
+                            @endif
+                        </flux:cell>
+
+                        {{-- Aksi --}}
+                        <flux:cell class="text-right">
+                            <flux:button
+                                wire:click="toggleActive({{ $user->id }})"
+                                wire:confirm="{{ $user->is_active ? 'Nonaktifkan user ini?' : 'Aktifkan user ini?' }}"
+                                size="sm"
+                                :variant="$user->is_active ? 'danger' : 'primary'"
+                                :disabled="$user->id === auth()->id()"
+                            >
+                                {{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                            </flux:button>
+                        </flux:cell>
+                    </flux:row>
+                @empty
+                    <flux:row>
+                        <flux:cell colspan="5" class="py-12 text-center">
+                            <flux:text class="text-slate-400">
+                                {{ $search ? 'Tidak ada user yang cocok dengan pencarian.' : 'Belum ada user.' }}
+                            </flux:text>
+                        </flux:cell>
+                    </flux:row>
+                @endforelse
+            </flux:rows>
+        </flux:table>
+
+        {{-- Pagination --}}
+        @if ($users->hasPages())
+            <div class="border-t border-slate-200 p-4 dark:border-slate-700">
+                {{ $users->links() }}
+            </div>
+        @endif
+    </flux:card>
+
+    {{-- Create User Modal --}}
+    <flux:modal wire:model="showCreateModal" class="md:w-[30rem]">
+        <form wire:submit="store" class="space-y-5">
+            <div>
+                <flux:heading size="lg">Tambah User Baru</flux:heading>
+                <flux:text class="mt-1 text-slate-500">Buat akun panitia, wasit, atau kasir.</flux:text>
+            </div>
+
+            <flux:field>
+                <flux:label>Nama Lengkap</flux:label>
+                <flux:input wire:model="name" type="text" placeholder="Nama lengkap" autofocus />
+                <flux:error name="name" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Email</flux:label>
+                <flux:input wire:model="email" type="email" placeholder="email@contoh.com" />
+                <flux:error name="email" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Password</flux:label>
+                <flux:input wire:model="password" type="password" placeholder="Min. 8 karakter" viewable />
+                <flux:error name="password" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Role</flux:label>
+                <flux:select wire:model="role">
+                    <flux:option value="admin">Admin</flux:option>
+                    <flux:option value="wasit">Wasit</flux:option>
+                    <flux:option value="kasir">Kasir</flux:option>
+                </flux:select>
+                <flux:error name="role" />
+            </flux:field>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <flux:button type="button" variant="ghost" wire:click="$set('showCreateModal', false)">
+                    Batal
+                </flux:button>
+                <flux:button type="submit" variant="primary">
+                    Simpan
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+</div>
