@@ -63,4 +63,17 @@ class TournamentTeam extends Model
     {
         return $this->hasMany(GameMatch::class, 'team2_id');
     }
+
+    /**
+     * Generate a unique invoice number for this team.
+     *
+     * Format: INV-{year}-{id padded to 4 digits}
+     * Example: INV-2026-0007
+     *
+     * Only call this when invoice_number is empty (first approval).
+     */
+    public function generateInvoiceNumber(): string
+    {
+        return sprintf('INV-%d-%04d', now()->year, $this->id);
+    }
 }
