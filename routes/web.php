@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Admin\FixtureGenerator;
+use App\Livewire\Admin\MatchControlPanel;
 use App\Livewire\Admin\MatchList;
 use App\Livewire\Admin\TeamDetail;
 use App\Livewire\Admin\TeamList;
@@ -19,6 +20,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/teams/{team}', TeamDetail::class)->name('admin.teams.show');
         Route::get('admin/fixtures', FixtureGenerator::class)->name('admin.fixtures');
         Route::get('admin/matches', MatchList::class)->name('admin.matches');
+        Route::get('admin/matches/{match}/control', MatchControlPanel::class)
+            ->middleware('role:admin,wasit')
+            ->name('admin.matches.control');
     });
 });
 

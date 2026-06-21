@@ -34,19 +34,7 @@
             <div class="flex flex-wrap items-center gap-3">
                 <flux:heading size="xl">{{ $team->name }}</flux:heading>
 
-                @php
-                    $statusColor = match($team->status) {
-                        'approved'     => 'green',
-                        'disqualified' => 'red',
-                        default        => 'yellow',
-                    };
-                    $statusLabel = match($team->status) {
-                        'approved'     => 'Approved',
-                        'disqualified' => 'Disqualified',
-                        default        => 'Pending',
-                    };
-                @endphp
-                <flux:badge :color="$statusColor" size="lg">{{ $statusLabel }}</flux:badge>
+                <x-status-badge :status="$team->status" type="team" size="lg" />
 
                 @if ($team->payment_status === 'paid')
                     <flux:badge color="green" size="lg">PAID</flux:badge>

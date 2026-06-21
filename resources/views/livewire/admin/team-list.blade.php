@@ -77,19 +77,7 @@
 
                         {{-- Status --}}
                         <flux:cell>
-                            @php
-                                $statusColor = match($team->status) {
-                                    'approved'      => 'green',
-                                    'disqualified'  => 'red',
-                                    default         => 'yellow', // pending
-                                };
-                                $statusLabel = match($team->status) {
-                                    'approved'      => 'Approved',
-                                    'disqualified'  => 'Disqualified',
-                                    default         => 'Pending',
-                                };
-                            @endphp
-                            <flux:badge :color="$statusColor">{{ $statusLabel }}</flux:badge>
+                            <x-status-badge :status="$team->status" type="team" />
                         </flux:cell>
 
                         {{-- PAID --}}

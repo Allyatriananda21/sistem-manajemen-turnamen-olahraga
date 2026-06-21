@@ -108,34 +108,34 @@
 
                         {{-- Status --}}
                         <flux:cell>
-                            @php
-                                $statusColor = match($match->status) {
-                                    'ongoing'   => 'blue',
-                                    'done'      => 'green',
-                                    'cancelled' => 'red',
-                                    default     => 'zinc', // scheduled
-                                };
-                                $statusLabel = match($match->status) {
-                                    'ongoing'   => 'Ongoing',
-                                    'done'      => 'Done',
-                                    'cancelled' => 'Cancelled',
-                                    default     => 'Scheduled',
-                                };
-                            @endphp
-                            <flux:badge :color="$statusColor" size="sm">{{ $statusLabel }}</flux:badge>
+                            <x-status-badge :status="$match->status" type="match" />
                         </flux:cell>
 
                         {{-- Aksi --}}
                         <flux:cell class="text-right">
-                            {{-- BYE entries and done/cancelled matches still allow venue edit --}}
-                            <flux:button
-                                wire:click="openEdit({{ $match->id }})"
-                                size="sm"
-                                variant="ghost"
-                                icon="pencil-square"
-                            >
-                                Edit Detail
-                            </flux:button>
+                            <div class="flex items-center justify-end gap-2">
+                                {{-- BYE entries and done/cancelled matches still allow venue edit --}}
+                                @if (! ($match->notes && str_contains($match->notes, 'BYE')))
+                                    <flux:button
+                                        href="{{ route('admin.matches.control', $match) }}"
+                                        wire:navigate
+                                        size="sm"
+                                        variant="primary"
+                                        icon="play"
+                                    >
+                                        Kelola
+                                    </flux:button>
+                                @endif
+
+                                <flux:button
+                                    wire:click="openEdit({{ $match->id }})"
+                                    size="sm"
+                                    variant="ghost"
+                                    icon="pencil-square"
+                                >
+                                    Edit Detail
+                                </flux:button>
+                            </div>
                         </flux:cell>
 
                     </flux:row>
