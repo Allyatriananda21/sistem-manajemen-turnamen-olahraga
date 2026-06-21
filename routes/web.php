@@ -3,6 +3,7 @@
 use App\Livewire\Admin\FixtureGenerator;
 use App\Livewire\Admin\MatchControlPanel;
 use App\Livewire\Admin\MatchList;
+use App\Livewire\Admin\StandingsTable;
 use App\Livewire\Admin\TeamDetail;
 use App\Livewire\Admin\TeamList;
 use App\Livewire\Admin\UserManagement;
@@ -23,6 +24,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/matches/{match}/control', MatchControlPanel::class)
             ->middleware('role:admin,wasit')
             ->name('admin.matches.control');
+        Route::get('admin/standings', StandingsTable::class)
+            ->middleware('role:admin,wasit')
+            ->name('admin.standings');
     });
 });
 

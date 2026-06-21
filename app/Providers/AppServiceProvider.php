@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\GameMatch;
+use App\Observers\GameMatchObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        GameMatch::observe(GameMatchObserver::class);
+
         $this->configureDefaults();
     }
 
