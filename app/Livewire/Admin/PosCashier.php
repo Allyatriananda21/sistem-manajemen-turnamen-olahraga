@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Models\PosProduct;
 use App\Models\PosTransaction;
 use App\Models\PosTransactionDetail;
+use App\Models\TournamentTeam;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,16 @@ class PosCashier extends Component
      * @var array<int, array{id: int, name: string, price: float, qty: int, subtotal: float}>
      */
     public array $cart = [];
+
+    // -----------------------------------------------------------------------
+    // Tagihan Tim properties
+    // -----------------------------------------------------------------------
+
+    public string $teamSearch = '';
+
+    public ?int $selectedTeamId = null;
+
+    public string $teamPaymentAmount = '';
 
     // -----------------------------------------------------------------------
     // Computed properties
@@ -76,6 +87,37 @@ class PosCashier extends Component
         $paid = (float) ($this->amountPaid ?: 0);
 
         return $paid - $this->total;
+    }
+
+    /**
+     * Unpaid teams for tagihan tab, filtered by search.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, TournamentTeam>
+     */
+    #[Computed]
+    public function unpaidTeams()
+    {
+        return TournamentTeam::where('payment_status', 'unpaid')
+            ->where('status', 'approved')
+            ->when(
+                $this->teamSearch,
+                fn ($q) => $q->where('name', 'like', "%{$this->teamSearch}%")
+            )
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * The currently selected team for payment.
+     */
+    #[Computed]
+    public function selectedTeam(): ?TournamentTeam
+    {
+        if (! $this->selectedTeamId) {
+            return null;
+        }
+
+        return TournamentTeam::find($this->selectedTeamId);
     }
 
     // -----------------------------------------------------------------------
@@ -291,6 +333,85 @@ class PosCashier extends Component
     public function dismissReceipt(): void
     {
         $this->lastReceipt = null;
+    }
+
+    // -----------------------------------------------------------------------
+    // Tagihan Tim actions
+    // -----------------------------------------------------------------------
+
+    /**
+     * Select a team to process their registration payment.
+     */
+    public function selectTeam(int $teamId): void
+    {
+        $this->selectedTeamId = $teamId;
+        $this->teamPaymentAmount = '';
+        $this->resetValidation('teamPaymentAmount');
+        unset($this->selectedTeam);
+    }
+
+    /**
+     * Deselect the current team without processing payment.
+     */
+    public function deselectTeam(): void
+    {
+        $this->selectedTeamId = null;
+        $this->teamPaymentAmount = '';
+        $this->resetValidation('teamPaymentAmount');
+        unset($this->selectedTeam);
+    }
+
+    /**
+     * Process registration payment for the selected team.
+     *
+     * In a single DB transaction:
+     *   1. Re-fetch team and verify still unpaid (guard against double payment).
+     *   2. Insert pos_transactions row (transaction_type='registrasi').
+     *   3. Update team payment_status to 'paid'.
+     */
+    public function processTeamPayment(): void
+    {
+        $validated = $this->validate([
+            'teamPaymentAmount' => ['required', 'numeric', 'gt:0'],
+        ], [
+            'teamPaymentAmount.required' => 'Nominal pembayaran wajib diisi.',
+            'teamPaymentAmount.numeric' => 'Nominal harus berupa angka.',
+            'teamPaymentAmount.gt' => 'Nominal harus lebih dari 0.',
+        ]);
+
+        $amount = (float) $validated['teamPaymentAmount'];
+        $teamIdNow = $this->selectedTeamId;
+
+        try {
+            DB::transaction(function () use ($teamIdNow, $amount): void {
+                $team = TournamentTeam::lockForUpdate()->findOrFail($teamIdNow);
+
+                if ($team->payment_status === 'paid') {
+                    throw new \RuntimeException("Tim \"{$team->name}\" sudah tercatat lunas.");
+                }
+
+                PosTransaction::create([
+                    'transaction_type' => 'registrasi',
+                    'team_id' => $team->id,
+                    'total_amount' => $amount,
+                    'payment_method' => 'cash',
+                    'cashier_name' => Auth::user()->name,
+                ]);
+
+                $team->update(['payment_status' => 'paid']);
+            });
+
+            // Refresh computed caches after mutation
+            unset($this->unpaidTeams, $this->selectedTeam);
+
+            $this->selectedTeamId = null;
+            $this->teamPaymentAmount = '';
+
+            Flux::toast(variant: 'success', text: 'Pembayaran registrasi tim berhasil dicatat.');
+
+        } catch (\RuntimeException $e) {
+            $this->addError('teamPaymentAmount', $e->getMessage());
+        }
     }
 
     // -----------------------------------------------------------------------

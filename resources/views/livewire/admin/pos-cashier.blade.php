@@ -11,7 +11,43 @@
         </flux:button>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+    {{-- Tab switcher (Alpine-driven, no server roundtrip) --}}
+    <div x-data="{ tab: 'retail' }">
+
+        {{-- Tab buttons --}}
+        <div class="flex gap-1 rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800 sm:w-fit">
+            <button
+                @click="tab = 'retail'"
+                :class="tab === 'retail' ? 'bg-white dark:bg-slate-900 shadow-sm text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+                class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all"
+            >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Retail
+            </button>
+            <button
+                @click="tab = 'tagihan'"
+                :class="tab === 'tagihan' ? 'bg-white dark:bg-slate-900 shadow-sm text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+                class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all"
+            >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Tagihan Tim
+                @if ($this->unpaidTeams->isNotEmpty())
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                        {{ $this->unpaidTeams->count() }}
+                    </span>
+                @endif
+            </button>
+        </div>
+
+        {{-- ================================================================
+             TAB: RETAIL
+             ================================================================ --}}
+        <div x-show="tab === 'retail'" class="mt-4">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
         {{-- ============================================================
              LEFT: Product Search + Grid
@@ -240,7 +276,139 @@
             </flux:card>
 
         </div>
-    </div>
+        </div>{{-- end retail grid --}}
+        </div>{{-- end tab retail --}}
+
+        {{-- ================================================================
+             TAB: TAGIHAN TIM
+             ================================================================ --}}
+        <div x-show="tab === 'tagihan'" class="mt-4">
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+                {{-- LEFT: Unpaid teams list --}}
+                <div class="space-y-4">
+                    <flux:input
+                        wire:model.live.debounce.250ms="teamSearch"
+                        placeholder="Cari nama tim..."
+                        icon="magnifying-glass"
+                    />
+
+                    @if ($this->unpaidTeams->isEmpty())
+                        <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 py-16 dark:border-slate-700">
+                            <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <flux:text class="text-center text-slate-400">
+                                {{ $teamSearch ? 'Tidak ada tim yang cocok.' : 'Semua tim sudah lunas.' }}
+                            </flux:text>
+                        </div>
+                    @else
+                        <div class="space-y-2">
+                            @foreach ($this->unpaidTeams as $team)
+                                <button
+                                    wire:click="selectTeam({{ $team->id }})"
+                                    wire:key="team-bill-{{ $team->id }}"
+                                    class="w-full rounded-xl border p-4 text-left transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50/50 dark:hover:border-indigo-700 dark:hover:bg-indigo-900/10
+                                        {{ $selectedTeamId === $team->id
+                                            ? 'border-indigo-400 bg-indigo-50 dark:border-indigo-600 dark:bg-indigo-900/20'
+                                            : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900' }}"
+                                >
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-400 to-orange-500 text-xs font-bold text-white shadow-sm select-none">
+                                                {{ strtoupper(substr($team->name, 0, 2)) }}
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ $team->name }}</p>
+                                                @if ($team->invoice_number)
+                                                    <p class="font-mono text-xs text-slate-400">{{ $team->invoice_number }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <flux:badge color="red" size="sm">Belum Lunas</flux:badge>
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                {{-- RIGHT: Payment form for selected team --}}
+                <div>
+                    @if ($this->selectedTeam)
+                        <flux:card class="space-y-5">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <flux:heading size="lg">{{ $this->selectedTeam->name }}</flux:heading>
+                                    @if ($this->selectedTeam->invoice_number)
+                                        <flux:text class="font-mono text-xs text-slate-400">
+                                            {{ $this->selectedTeam->invoice_number }}
+                                        </flux:text>
+                                    @endif
+                                    <div class="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
+                                        <span>{{ $this->selectedTeam->sport_type }}</span>
+                                        @if ($this->selectedTeam->contact_person)
+                                            <span>&middot; {{ $this->selectedTeam->contact_person }}</span>
+                                        @endif
+                                        @if ($this->selectedTeam->phone)
+                                            <span>&middot; {{ $this->selectedTeam->phone }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <button wire:click="deselectTeam" class="text-slate-300 hover:text-slate-500 transition-colors">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <flux:separator />
+
+                            <flux:field>
+                                <flux:label>Nominal Pembayaran (Rp)</flux:label>
+                                <flux:input
+                                    wire:model.live="teamPaymentAmount"
+                                    type="number"
+                                    min="1"
+                                    step="10000"
+                                    placeholder="cth. 150000"
+                                    inputmode="numeric"
+                                    autofocus
+                                />
+                                <flux:description>
+                                    Sesuai nominal biaya registrasi yang telah disepakati.
+                                </flux:description>
+                                <flux:error name="teamPaymentAmount" />
+                            </flux:field>
+
+                            <flux:button
+                                wire:click="processTeamPayment"
+                                wire:loading.attr="disabled"
+                                variant="primary"
+                                icon="check-circle"
+                                class="w-full"
+                                :disabled="! $teamPaymentAmount"
+                            >
+                                <span wire:loading.remove wire:target="processTeamPayment">Tandai Lunas</span>
+                                <span wire:loading wire:target="processTeamPayment">Menyimpan...</span>
+                            </flux:button>
+                        </flux:card>
+                    @else
+                        <div class="flex h-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 p-12 dark:border-slate-700">
+                            <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                            </svg>
+                            <flux:text class="text-center text-sm text-slate-400">
+                                Pilih tim di sebelah kiri<br>untuk memproses pembayaran.
+                            </flux:text>
+                        </div>
+                    @endif
+                </div>
+
+            </div>
+        </div>{{-- end tab tagihan --}}
+
+    </div>{{-- end x-data tab --}}
 
     {{-- Receipt Panel — shown after successful checkout --}}
     @if ($lastReceipt)
