@@ -55,16 +55,15 @@
 
                         {{-- Role (editable select) --}}
                         <flux:cell>
-                            <flux:select
+                            <select
                                 wire:change="updateRole({{ $user->id }}, $event.target.value)"
-                                size="sm"
                                 :disabled="$user->id === auth()->id()"
-                                class="w-28"
+                                class="w-28 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs py-1.5 px-2 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
-                                <flux:option value="admin" :selected="$user->role === 'admin'">Admin</flux:option>
-                                <flux:option value="wasit" :selected="$user->role === 'wasit'">Wasit</flux:option>
-                                <flux:option value="kasir" :selected="$user->role === 'kasir'">Kasir</flux:option>
-                            </flux:select>
+                                <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="wasit" {{ $user->role === 'wasit' ? 'selected' : '' }}>Wasit</option>
+                                <option value="kasir" {{ $user->role === 'kasir' ? 'selected' : '' }}>Kasir</option>
+                            </select>
                         </flux:cell>
 
                         {{-- Status aktif --}}
@@ -137,11 +136,11 @@
 
             <flux:field>
                 <flux:label>Role</flux:label>
-                <flux:select wire:model="role">
-                    <flux:option value="admin">Admin</flux:option>
-                    <flux:option value="wasit">Wasit</flux:option>
-                    <flux:option value="kasir">Kasir</flux:option>
-                </flux:select>
+                <select wire:model="role" class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="admin">Admin</option>
+                    <option value="wasit">Wasit</option>
+                    <option value="kasir">Kasir</option>
+                </select>
                 <flux:error name="role" />
             </flux:field>
 

@@ -42,23 +42,23 @@
             {{-- Round --}}
             <flux:field>
                 <flux:label>Babak / Round</flux:label>
-                <flux:select wire:model.live="filterRound">
-                    <flux:option value="">Semua Babak</flux:option>
+                <select wire:model.live="filterRound" class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Semua Babak</option>
                     @foreach ($this->allRounds as $round)
-                        <flux:option :value="$round">{{ $round }}</flux:option>
+                        <option value="{{ $round }}">{{ $round }}</option>
                     @endforeach
-                </flux:select>
+                </select>
             </flux:field>
 
             {{-- Competitor --}}
             <flux:field>
                 <flux:label>Tim / Competitor</flux:label>
-                <flux:select wire:model.live="filterTeamId">
-                    <flux:option value="">Semua Tim</flux:option>
+                <select wire:model.live="filterTeamId" class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Semua Tim</option>
                     @foreach ($this->allApprovedTeams as $team)
-                        <flux:option :value="$team->id">{{ $team->name }}</flux:option>
+                        <option value="{{ $team->id }}">{{ $team->name }}</option>
                     @endforeach
-                </flux:select>
+                </select>
             </flux:field>
 
         </div>

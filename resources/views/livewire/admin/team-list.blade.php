@@ -15,12 +15,12 @@
             class="sm:max-w-xs"
         />
 
-        <flux:select wire:model.live="statusFilter" class="sm:w-44">
-            <flux:option value="all">Semua Status</flux:option>
-            <flux:option value="pending">Pending</flux:option>
-            <flux:option value="approved">Approved</flux:option>
-            <flux:option value="disqualified">Disqualified</flux:option>
-        </flux:select>
+        <select wire:model.live="statusFilter" class="sm:w-44 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="all">Semua Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="disqualified">Disqualified</option>
+        </select>
 
         {{-- Active filter badge --}}
         @if ($search || $statusFilter !== 'all')

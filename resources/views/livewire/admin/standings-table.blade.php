@@ -9,12 +9,12 @@
 
         {{-- Round / Pool filter --}}
         @if ($this->availableRounds->isNotEmpty())
-            <flux:select wire:model.live="roundFilter" class="sm:w-52">
-                <flux:option value="">Semua Babak</flux:option>
+            <select wire:model.live="roundFilter" class="sm:w-52 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Semua Babak</option>
                 @foreach ($this->availableRounds as $round)
-                    <flux:option :value="$round">{{ $round }}</flux:option>
+                    <option :value="$round">{{ $round }}</option>
                 @endforeach
-            </flux:select>
+            </select>
         @endif
     </div>
 

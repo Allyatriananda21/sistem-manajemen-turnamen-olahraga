@@ -20,13 +20,13 @@
             class="sm:max-w-xs"
         />
 
-        <flux:select wire:model.live="statusFilter" class="sm:w-44">
-            <flux:option value="all">Semua Status</flux:option>
-            <flux:option value="scheduled">Scheduled</flux:option>
-            <flux:option value="ongoing">Ongoing</flux:option>
-            <flux:option value="done">Done</flux:option>
-            <flux:option value="cancelled">Cancelled</flux:option>
-        </flux:select>
+        <select wire:model.live="statusFilter" class="sm:w-44 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="all">Semua Status</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="done">Done</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
 
         @if ($search || $statusFilter !== 'all')
             <flux:badge color="blue" class="self-start sm:self-auto">

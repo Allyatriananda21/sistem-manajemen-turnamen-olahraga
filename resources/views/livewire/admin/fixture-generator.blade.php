@@ -17,10 +17,10 @@
                 {{-- Format dropdown --}}
                 <flux:field>
                     <flux:label>Format Kompetisi</flux:label>
-                    <flux:select wire:model.live="format">
-                        <flux:option value="round-robin">Round-Robin</flux:option>
-                        <flux:option value="knockout">Knockout / Eliminasi</flux:option>
-                    </flux:select>
+                    <select wire:model.live="format" class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="round-robin">Round-Robin</option>
+                        <option value="knockout">Knockout / Eliminasi</option>
+                    </select>
                     <flux:description>
                         @if ($format === 'knockout')
                             Babak 1 saja. Babak selanjutnya dibuat manual setelah hasil keluar.
