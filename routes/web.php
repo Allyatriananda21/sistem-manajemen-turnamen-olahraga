@@ -3,6 +3,8 @@
 use App\Livewire\Admin\FixtureGenerator;
 use App\Livewire\Admin\MatchControlPanel;
 use App\Livewire\Admin\MatchList;
+use App\Livewire\Admin\PosCashier;
+use App\Livewire\Admin\PosProductManagement;
 use App\Livewire\Admin\StandingsTable;
 use App\Livewire\Admin\TeamDetail;
 use App\Livewire\Admin\TeamList;
@@ -27,6 +29,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/standings', StandingsTable::class)
             ->middleware('role:admin,wasit')
             ->name('admin.standings');
+        Route::get('admin/pos/products', PosProductManagement::class)->name('admin.pos.products');
+        Route::get('admin/pos', PosCashier::class)
+            ->middleware('role:admin,kasir')
+            ->name('admin.pos');
     });
 });
 

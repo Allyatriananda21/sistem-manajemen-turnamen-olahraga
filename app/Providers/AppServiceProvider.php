@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
                     // TODO: Fase 5 — ganti ke route khusus wasit saat modul live score dibuat
                     'wasit' => redirect()->route('admin.dashboard'),
                     // TODO: Fase 7 — ganti ke route('pos.index') saat modul POS Livewire selesai dibuat
-                    'kasir' => redirect()->route('admin.dashboard'),
+                    'kasir' => redirect()->route('admin.pos'),
                     default => redirect()->route('admin.dashboard'),
                 };
             }
