@@ -344,6 +344,18 @@
         Kembali ke Daftar Pertandingan
     </flux:button>
 
+    {{-- Statistics link — only available after match is done --}}
+    @if ($match->status === 'done')
+        <flux:button
+            href="{{ route('admin.matches.statistics', $match) }}"
+            wire:navigate
+            variant="ghost"
+            icon="chart-bar"
+        >
+            Input Statistik Pemain
+        </flux:button>
+    @endif
+
     {{-- Zero Score Confirmation Modal --}}
     <flux:modal wire:model.self="showZeroScoreConfirm" class="md:w-[26rem]" :dismissible="false">
         <div class="space-y-5">

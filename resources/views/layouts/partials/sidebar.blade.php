@@ -93,6 +93,19 @@
                 <span class="text-sm">Pertandingan</span>
             </a>
 
+            <!-- Bracket -->
+            <a href="{{ route('admin.bracket') }}"
+               wire:navigate
+               class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+               {{ request()->routeIs('admin.bracket')
+                  ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
+                <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+                <span class="text-sm">Bracket</span>
+            </a>
+
             <!-- Klasemen -->
             <a href="{{ route('admin.standings') }}"
                wire:navigate
@@ -143,6 +156,23 @@
                 </svg>
                 <span class="text-sm">Laporan</span>
             </a>
+
+            <!-- Galeri -->
+            @auth
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.gallery') }}"
+                       wire:navigate
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+                       {{ request()->routeIs('admin.gallery')
+                          ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
+                        <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-sm">Galeri Foto</span>
+                    </a>
+                @endif
+            @endauth
 
             <!-- Manajemen User (admin only) -->
             @auth

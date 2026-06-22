@@ -1,8 +1,12 @@
 <?php
 
+use App\Livewire\Admin\BracketView;
 use App\Livewire\Admin\FixtureGenerator;
+use App\Livewire\Admin\GalleryManagement;
 use App\Livewire\Admin\MatchControlPanel;
 use App\Livewire\Admin\MatchList;
+use App\Livewire\Admin\MatchStatisticsInput;
+use App\Livewire\Admin\PlayerManagement;
 use App\Livewire\Admin\PosCashier;
 use App\Livewire\Admin\PosProductManagement;
 use App\Livewire\Admin\StandingsTable;
@@ -21,11 +25,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/users', UserManagement::class)->name('admin.users');
         Route::get('admin/teams', TeamList::class)->name('admin.teams');
         Route::get('admin/teams/{team}', TeamDetail::class)->name('admin.teams.show');
+        Route::get('admin/teams/{team}/players', PlayerManagement::class)
+            ->middleware('role:admin,wasit')
+            ->name('admin.teams.players');
         Route::get('admin/fixtures', FixtureGenerator::class)->name('admin.fixtures');
+        Route::get('admin/bracket', BracketView::class)->name('admin.bracket');
         Route::get('admin/matches', MatchList::class)->name('admin.matches');
         Route::get('admin/matches/{match}/control', MatchControlPanel::class)
             ->middleware('role:admin,wasit')
             ->name('admin.matches.control');
+        Route::get('admin/matches/{match}/statistics', MatchStatisticsInput::class)
+            ->middleware('role:admin,wasit')
+            ->name('admin.matches.statistics');
         Route::get('admin/standings', StandingsTable::class)
             ->middleware('role:admin,wasit')
             ->name('admin.standings');
@@ -33,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/pos', PosCashier::class)
             ->middleware('role:admin,kasir')
             ->name('admin.pos');
+        Route::get('admin/gallery', GalleryManagement::class)->name('admin.gallery');
     });
 });
 
