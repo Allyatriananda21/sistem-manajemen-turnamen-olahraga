@@ -23,41 +23,41 @@
     {{-- Players Table --}}
     <flux:card class="overflow-hidden p-0">
         <flux:table>
-            <flux:columns>
-                <flux:column class="w-12 text-center">#</flux:column>
-                <flux:column>Nama Pemain</flux:column>
-                <flux:column>Posisi</flux:column>
-                <flux:column class="text-right">Aksi</flux:column>
-            </flux:columns>
-            <flux:rows>
+            <flux:table.columns>
+                <flux:table.column class="w-12 text-center">#</flux:table.column>
+                <flux:table.column>Nama Pemain</flux:table.column>
+                <flux:table.column>Posisi</flux:table.column>
+                <flux:table.column class="text-right">Aksi</flux:table.column>
+            </flux:table.columns>
+            <flux:table.rows>
                 @forelse ($players as $player)
-                    <flux:row wire:key="player-{{ $player->id }}">
-                        <flux:cell class="text-center">
+                    <flux:table.row wire:key="player-{{ $player->id }}">
+                        <flux:table.cell class="text-center">
                             <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
                                 {{ $player->jersey_number ?? '—' }}
                             </span>
-                        </flux:cell>
-                        <flux:cell>
+                        </flux:table.cell>
+                        <flux:table.cell>
                             <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ $player->full_name }}</span>
-                        </flux:cell>
-                        <flux:cell>
+                        </flux:table.cell>
+                        <flux:table.cell>
                             <span class="text-sm text-slate-500">{{ $player->position ?? '—' }}</span>
-                        </flux:cell>
-                        <flux:cell class="text-right">
+                        </flux:table.cell>
+                        <flux:table.cell class="text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <flux:button wire:click="openEdit({{ $player->id }})" size="sm" variant="ghost" icon="pencil-square">Edit</flux:button>
                                 <flux:button wire:click="openDelete({{ $player->id }})" size="sm" variant="danger" icon="trash">Hapus</flux:button>
                             </div>
-                        </flux:cell>
-                    </flux:row>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @empty
-                    <flux:row>
-                        <flux:cell colspan="4" class="py-12 text-center">
+                    <flux:table.row>
+                        <flux:table.cell colspan="4" class="py-12 text-center">
                             <flux:text class="text-slate-400">Belum ada pemain. Tambahkan pemain pertama.</flux:text>
-                        </flux:cell>
-                    </flux:row>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
-            </flux:rows>
+            </flux:table.rows>
         </flux:table>
         @if ($players->hasPages())
             <div class="border-t border-slate-200 p-4 dark:border-slate-700">{{ $players->links() }}</div>

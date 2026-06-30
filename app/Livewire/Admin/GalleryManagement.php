@@ -56,22 +56,33 @@ class GalleryManagement extends Component
     // -----------------------------------------------------------------------
 
     public function upload(): void
-    {
-        $this->validateOnly('photo');
+{
+    \Log::info('=== upload() method dipanggil ===');
 
+    $this->validateOnly('photo');
+
+    try {
         $path = $this->photo->store('gallery', 'public');
+        \Log::info('=== file tersimpan: ' . $path);
 
         Gallery::create([
             'match_id'   => $this->matchId ?: null,
             'image_path' => $path,
             'caption'    => $this->caption ?: null,
         ]);
+        \Log::info('=== record gallery berhasil dibuat ===');
 
         $this->reset(['photo', 'caption', 'matchId']);
         $this->resetPage();
 
         Flux::toast(variant: 'success', text: 'Foto berhasil diunggah.');
+        \Log::info('=== upload() selesai total ===');
+    } catch (\Throwable $e) {
+        \Log::error('=== upload() GAGAL: ' . $e->getMessage());
+        report($e);
+        Flux::toast(variant: 'danger', text: 'Gagal: ' . $e->getMessage());
     }
+}
 
     // -----------------------------------------------------------------------
     // Delete

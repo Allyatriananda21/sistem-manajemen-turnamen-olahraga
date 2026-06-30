@@ -9,6 +9,7 @@ use App\Livewire\Admin\MatchStatisticsInput;
 use App\Livewire\Admin\PlayerManagement;
 use App\Livewire\Admin\PosCashier;
 use App\Livewire\Admin\PosProductManagement;
+use App\Livewire\Admin\Report;
 use App\Livewire\Admin\StandingsTable;
 use App\Livewire\Admin\TeamDetail;
 use App\Livewire\Admin\TeamList;
@@ -45,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('role:admin,kasir')
             ->name('admin.pos');
         Route::get('admin/gallery', GalleryManagement::class)->name('admin.gallery');
+        Route::get('admin/laporan', Report::class)->name('admin.laporan');
     });
 });
 

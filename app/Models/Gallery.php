@@ -25,6 +25,13 @@ use Illuminate\Support\Carbon;
 class Gallery extends Model
 {
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'gallery';
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

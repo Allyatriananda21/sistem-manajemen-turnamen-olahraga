@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\GameMatch;
 use App\Observers\GameMatchObserver;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -42,6 +43,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         GameMatch::observe(GameMatchObserver::class);
+
+        // Redirect already-authenticated users away from /login to admin dashboard
+        RedirectIfAuthenticated::redirectUsing(fn () => route('admin.dashboard'));
 
         $this->configureDefaults();
     }

@@ -137,7 +137,7 @@
                                             {{ $photo->match->team1->name ?? '' }} vs {{ $photo->match->team2->name ?? '' }}
                                         </p>
                                     @endif
-                                    <p class="mt-0.5 text-[10px] text-white/50">{{ $photo->uploaded_at->format('d M Y') }}</p>
+                                    <p class="mt-0.5 text-[10px] text-white/50">{{ $photo->uploaded_at->format('d M Y, H:i') }}</p>
                                 </div>
                             </div>
 

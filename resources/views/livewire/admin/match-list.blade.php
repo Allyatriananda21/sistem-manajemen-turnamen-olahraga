@@ -38,22 +38,22 @@
     {{-- Matches Table --}}
     <flux:card class="overflow-hidden p-0">
         <flux:table>
-            <flux:columns>
-                <flux:column>Pertandingan</flux:column>
-                <flux:column>Babak</flux:column>
-                <flux:column>Tanggal & Waktu</flux:column>
-                <flux:column>Venue</flux:column>
-                <flux:column>Wasit</flux:column>
-                <flux:column>Status</flux:column>
-                <flux:column class="text-right">Aksi</flux:column>
-            </flux:columns>
+            <flux:table.columns>
+                <flux:table.column>Pertandingan</flux:table.column>
+                <flux:table.column>Babak</flux:table.column>
+                <flux:table.column>Tanggal & Waktu</flux:table.column>
+                <flux:table.column>Venue</flux:table.column>
+                <flux:table.column>Wasit</flux:table.column>
+                <flux:table.column>Status</flux:table.column>
+                <flux:table.column class="text-right">Aksi</flux:table.column>
+            </flux:table.columns>
 
-            <flux:rows>
+            <flux:table.rows>
                 @forelse ($matches as $match)
-                    <flux:row wire:key="match-{{ $match->id }}">
+                    <flux:table.row wire:key="match-{{ $match->id }}">
 
                         {{-- Pertandingan --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             @if ($match->notes && str_contains($match->notes, 'BYE'))
                                 {{-- BYE entry --}}
                                 <div class="flex items-center gap-2">
@@ -73,46 +73,45 @@
                                     </span>
                                 </div>
                             @endif
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Babak --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <flux:badge color="zinc" size="sm">{{ $match->round ?? '—' }}</flux:badge>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Tanggal & Waktu --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             @if ($match->match_date)
-                                <p class="text-sm text-slate-700 dark:text-slate-300">
-                                    {{ $match->match_date->format('d M Y') }}
-                                </p>
-                                <p class="text-xs text-slate-400">{{ $match->match_date->format('H:i') }}</p>
+                                <span class="text-sm text-slate-700 dark:text-slate-300">
+                                    {{ $match->match_date->format('d M Y, H:i') }}
+                                </span>
                             @else
                                 <span class="text-sm text-slate-400">—</span>
                             @endif
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Venue --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <span class="text-sm text-slate-700 dark:text-slate-300">
                                 {{ $match->venue ?? '—' }}
                             </span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Wasit --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <span class="text-sm text-slate-700 dark:text-slate-300">
                                 {{ $match->referee ?? '—' }}
                             </span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Status --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <x-status-badge :status="$match->status" type="match" />
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Aksi --}}
-                        <flux:cell class="text-right">
+                        <flux:table.cell class="text-right">
                             <div class="flex items-center justify-end gap-2">
                                 {{-- BYE entries and done/cancelled matches still allow venue edit --}}
                                 @if (! ($match->notes && str_contains($match->notes, 'BYE')))
@@ -136,12 +135,12 @@
                                     Edit Detail
                                 </flux:button>
                             </div>
-                        </flux:cell>
+                        </flux:table.cell>
 
-                    </flux:row>
+                    </flux:table.row>
                 @empty
-                    <flux:row>
-                        <flux:cell colspan="7" class="py-12 text-center">
+                    <flux:table.row>
+                        <flux:table.cell colspan="7" class="py-12 text-center">
                             <div class="flex flex-col items-center gap-2">
                                 <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -155,10 +154,10 @@
                                     </flux:button>
                                 @endif
                             </div>
-                        </flux:cell>
-                    </flux:row>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
-            </flux:rows>
+            </flux:table.rows>
         </flux:table>
 
         @if ($matches->hasPages())

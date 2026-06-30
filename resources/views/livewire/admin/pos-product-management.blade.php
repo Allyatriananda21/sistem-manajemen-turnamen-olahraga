@@ -22,33 +22,33 @@
     {{-- Products Table --}}
     <flux:card class="overflow-hidden p-0">
         <flux:table>
-            <flux:columns>
-                <flux:column>Nama Produk</flux:column>
-                <flux:column class="text-right">Harga</flux:column>
-                <flux:column class="text-center">Stok</flux:column>
-                <flux:column class="text-right">Aksi</flux:column>
-            </flux:columns>
+            <flux:table.columns>
+                <flux:table.column>Nama Produk</flux:table.column>
+                <flux:table.column class="text-right">Harga</flux:table.column>
+                <flux:table.column class="text-center">Stok</flux:table.column>
+                <flux:table.column class="text-right">Aksi</flux:table.column>
+            </flux:table.columns>
 
-            <flux:rows>
+            <flux:table.rows>
                 @forelse ($products as $product)
-                    <flux:row wire:key="product-{{ $product->id }}">
+                    <flux:table.row wire:key="product-{{ $product->id }}">
 
                         {{-- Nama --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">
                                 {{ $product->product_name }}
                             </span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Harga --}}
-                        <flux:cell class="text-right">
+                        <flux:table.cell class="text-right">
                             <span class="text-sm tabular-nums text-slate-700 dark:text-slate-300">
                                 Rp {{ number_format($product->price, 0, ',', '.') }}
                             </span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Stok --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             @if ($product->stock === 0)
                                 <flux:badge color="red" size="sm">Habis</flux:badge>
                             @elseif ($product->stock <= 5)
@@ -56,10 +56,10 @@
                             @else
                                 <flux:badge color="green" size="sm">{{ $product->stock }}</flux:badge>
                             @endif
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Aksi --}}
-                        <flux:cell class="text-right">
+                        <flux:table.cell class="text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <flux:button
                                     wire:click="openEdit({{ $product->id }})"
@@ -78,12 +78,12 @@
                                     Hapus
                                 </flux:button>
                             </div>
-                        </flux:cell>
+                        </flux:table.cell>
 
-                    </flux:row>
+                    </flux:table.row>
                 @empty
-                    <flux:row>
-                        <flux:cell colspan="4" class="py-12 text-center">
+                    <flux:table.row>
+                        <flux:table.cell colspan="4" class="py-12 text-center">
                             <div class="flex flex-col items-center gap-2">
                                 <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -92,10 +92,10 @@
                                     {{ $search ? 'Tidak ada produk yang cocok.' : 'Belum ada produk. Tambahkan produk pertama.' }}
                                 </flux:text>
                             </div>
-                        </flux:cell>
-                    </flux:row>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
-            </flux:rows>
+            </flux:table.rows>
         </flux:table>
 
         @if ($products->hasPages())
@@ -140,8 +140,8 @@
                 <flux:input
                     wire:model="formPrice"
                     type="number"
-                    min="1"
-                    step="500"
+                    min="0"
+                    step="any"
                     placeholder="cth. 5000"
                     inputmode="numeric"
                 />

@@ -33,22 +33,22 @@
     {{-- Teams Table --}}
     <flux:card class="overflow-hidden p-0">
         <flux:table>
-            <flux:columns>
-                <flux:column sortable>Nama Tim</flux:column>
-                <flux:column>Contact Person</flux:column>
-                <flux:column>Cabang Olahraga</flux:column>
-                <flux:column>Status</flux:column>
-                <flux:column>PAID</flux:column>
-                <flux:column>Terdaftar</flux:column>
-                <flux:column class="text-right">Aksi</flux:column>
-            </flux:columns>
+            <flux:table.columns>
+                <flux:table.column sortable>Nama Tim</flux:table.column>
+                <flux:table.column>Contact Person</flux:table.column>
+                <flux:table.column>Cabang Olahraga</flux:table.column>
+                <flux:table.column>Status</flux:table.column>
+                <flux:table.column>PAID</flux:table.column>
+                <flux:table.column>Terdaftar</flux:table.column>
+                <flux:table.column class="text-right">Aksi</flux:table.column>
+            </flux:table.columns>
 
-            <flux:rows>
+            <flux:table.rows>
                 @forelse ($teams as $team)
-                    <flux:row wire:key="team-{{ $team->id }}">
+                    <flux:table.row wire:key="team-{{ $team->id }}">
 
                         {{-- Nama Tim --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <div class="flex items-center gap-3">
                                 <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
                                     {{ strtoupper(substr($team->name, 0, 2)) }}
@@ -60,28 +60,28 @@
                                     @endif
                                 </div>
                             </div>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Contact Person --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <div>
                                 <p class="text-sm text-slate-700 dark:text-slate-300">{{ $team->contact_person }}</p>
                                 <p class="text-xs text-slate-400">{{ $team->phone }}</p>
                             </div>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Cabang Olahraga --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <flux:badge color="zinc" size="sm">{{ $team->sport_type }}</flux:badge>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Status --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <x-status-badge :status="$team->status" type="team" />
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- PAID --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             @if ($team->payment_status === 'paid')
                                 <div class="flex items-center gap-1.5 text-green-600 dark:text-green-400">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,20 +97,17 @@
                                     <span class="text-sm font-semibold">No</span>
                                 </div>
                             @endif
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Tanggal Daftar --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <flux:text class="text-sm text-slate-600 dark:text-slate-400">
-                                {{ $team->registered_at->format('d M Y') }}
+                                {{ $team->registered_at->format('d M Y, H:i') }}
                             </flux:text>
-                            <flux:text class="text-xs text-slate-400">
-                                {{ $team->registered_at->format('H:i') }}
-                            </flux:text>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Aksi --}}
-                        <flux:cell class="text-right">
+                        <flux:table.cell class="text-right">
                             <div class="flex items-center justify-end gap-2">
                                 {{-- Lihat Detail --}}
                                 <flux:button
@@ -147,12 +144,12 @@
                                     </flux:button>
                                 @endif
                             </div>
-                        </flux:cell>
+                        </flux:table.cell>
 
-                    </flux:row>
+                    </flux:table.row>
                 @empty
-                    <flux:row>
-                        <flux:cell colspan="7" class="py-12 text-center">
+                    <flux:table.row>
+                        <flux:table.cell colspan="7" class="py-12 text-center">
                             <div class="flex flex-col items-center gap-2">
                                 <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -161,10 +158,10 @@
                                     {{ $search || $statusFilter !== 'all' ? 'Tidak ada tim yang cocok dengan filter.' : 'Belum ada tim yang mendaftar.' }}
                                 </flux:text>
                             </div>
-                        </flux:cell>
-                    </flux:row>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
-            </flux:rows>
+            </flux:table.rows>
         </flux:table>
 
         {{-- Pagination --}}

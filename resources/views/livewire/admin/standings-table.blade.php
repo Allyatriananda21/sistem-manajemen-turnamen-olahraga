@@ -31,27 +31,27 @@
     {{-- Standings Table --}}
     <flux:card class="overflow-hidden p-0">
         <flux:table>
-            <flux:columns>
-                <flux:column class="w-12 text-center">#</flux:column>
-                <flux:column>Tim</flux:column>
-                <flux:column class="text-center">M</flux:column>
-                <flux:column class="text-center">W</flux:column>
-                <flux:column class="text-center">D</flux:column>
-                <flux:column class="text-center">L</flux:column>
-                <flux:column class="text-center">GD</flux:column>
-                <flux:column class="text-center font-bold">PTS</flux:column>
-            </flux:columns>
+            <flux:table.columns>
+                <flux:table.column class="w-12 text-center">#</flux:table.column>
+                <flux:table.column>Tim</flux:table.column>
+                <flux:table.column class="text-center">M</flux:table.column>
+                <flux:table.column class="text-center">W</flux:table.column>
+                <flux:table.column class="text-center">D</flux:table.column>
+                <flux:table.column class="text-center">L</flux:table.column>
+                <flux:table.column class="text-center">GD</flux:table.column>
+                <flux:table.column class="text-center font-bold">PTS</flux:table.column>
+            </flux:table.columns>
 
-            <flux:rows>
+            <flux:table.rows>
                 @forelse ($this->standings as $rank => $standing)
                     @php $position = $rank + 1; @endphp
-                    <flux:row wire:key="standing-{{ $standing->id }}"
+                    <flux:table.row wire:key="standing-{{ $standing->id }}"
                         @class([
                             'border-l-4 border-indigo-500 bg-indigo-50/40 dark:bg-indigo-900/10' => $position === 1,
                         ])
                     >
                         {{-- Rank --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             @if ($position === 1)
                                 <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-white shadow-sm">
                                     1
@@ -67,10 +67,10 @@
                             @else
                                 <span class="text-sm text-slate-400">{{ $position }}</span>
                             @endif
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Tim --}}
-                        <flux:cell>
+                        <flux:table.cell>
                             <div class="flex items-center gap-3">
                                 <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
                                     {{ strtoupper(substr($standing->team->name, 0, 2)) }}
@@ -79,30 +79,30 @@
                                     {{ $standing->team->name }}
                                 </span>
                             </div>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Played --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             <span class="text-sm tabular-nums text-slate-600 dark:text-slate-400">{{ $standing->played }}</span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Win --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             <span class="text-sm tabular-nums font-medium text-green-600 dark:text-green-400">{{ $standing->win }}</span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Draw --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             <span class="text-sm tabular-nums text-slate-500">{{ $standing->draw }}</span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Lose --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             <span class="text-sm tabular-nums font-medium text-red-500 dark:text-red-400">{{ $standing->lose }}</span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Goal Diff --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             @php $gd = $standing->goal_diff; @endphp
                             <span @class([
                                 'text-sm tabular-nums font-medium',
@@ -112,10 +112,10 @@
                             ])>
                                 {{ $gd > 0 ? '+' . $gd : $gd }}
                             </span>
-                        </flux:cell>
+                        </flux:table.cell>
 
                         {{-- Points --}}
-                        <flux:cell class="text-center">
+                        <flux:table.cell class="text-center">
                             <span @class([
                                 'inline-flex items-center justify-center rounded-lg px-2.5 py-0.5 text-sm font-bold tabular-nums',
                                 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30' => $position === 1,
@@ -123,12 +123,12 @@
                             ])>
                                 {{ $standing->points }}
                             </span>
-                        </flux:cell>
+                        </flux:table.cell>
 
-                    </flux:row>
+                    </flux:table.row>
                 @empty
-                    <flux:row>
-                        <flux:cell colspan="8" class="py-12 text-center">
+                    <flux:table.row>
+                        <flux:table.cell colspan="8" class="py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -142,10 +142,10 @@
                                     </flux:button>
                                 @endif
                             </div>
-                        </flux:cell>
-                    </flux:row>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
-            </flux:rows>
+            </flux:table.rows>
         </flux:table>
     </flux:card>
 
