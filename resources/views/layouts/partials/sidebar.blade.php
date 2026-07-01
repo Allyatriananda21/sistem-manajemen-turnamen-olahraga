@@ -54,7 +54,8 @@
                 <span class="text-sm">Dashboard</span>
             </a>
 
-            <!-- Tim -->
+            <!-- Tim (admin only) -->
+            @if(auth()->user()->isAdmin())
             <a href="{{ route('admin.teams') }}"
                wire:navigate
                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
@@ -66,8 +67,10 @@
                 </svg>
                 <span class="text-sm">Tim</span>
             </a>
+            @endif
 
-            <!-- Jadwal -->
+            <!-- Jadwal (admin only) -->
+            @if(auth()->user()->isAdmin())
             <a href="{{ route('admin.fixtures') }}"
                wire:navigate
                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
@@ -79,8 +82,10 @@
                 </svg>
                 <span class="text-sm">Jadwal</span>
             </a>
+            @endif
 
-            <!-- Pertandingan -->
+            <!-- Pertandingan (admin + wasit) -->
+            @if(auth()->user()->isAdmin() || auth()->user()->isWasit())
             <a href="{{ route('admin.matches') }}"
                wire:navigate
                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
@@ -92,8 +97,10 @@
                 </svg>
                 <span class="text-sm">Pertandingan</span>
             </a>
+            @endif
 
-            <!-- Bracket -->
+            <!-- Bracket (admin only) -->
+            @if(auth()->user()->isAdmin())
             <a href="{{ route('admin.bracket') }}"
                wire:navigate
                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
@@ -105,8 +112,10 @@
                 </svg>
                 <span class="text-sm">Bracket</span>
             </a>
+            @endif
 
-            <!-- Klasemen -->
+            <!-- Klasemen (admin + wasit) -->
+            @if(auth()->user()->isAdmin() || auth()->user()->isWasit())
             <a href="{{ route('admin.standings') }}"
                wire:navigate
                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
@@ -118,8 +127,10 @@
                 </svg>
                 <span class="text-sm">Klasemen</span>
             </a>
+            @endif
 
-            <!-- POS -->
+            <!-- POS (admin + kasir) -->
+            @if(auth()->user()->isAdmin() || auth()->user()->isKasir())
             <a href="{{ route('admin.pos') }}"
                wire:navigate
                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
@@ -131,73 +142,67 @@
                 </svg>
                 <span class="text-sm">Kasir POS</span>
             </a>
+            @endif
 
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.pos.products') }}"
-                       wire:navigate
-                       class="flex items-center gap-3 px-4 py-2.5 ml-4 rounded-xl transition-all duration-300 group text-sm
-                       {{ request()->routeIs('admin.pos.products')
-                          ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
-                          : 'text-slate-500 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                        <span>Kelola Produk</span>
-                    </a>
-                @endif
-            @endauth
+            {{-- Kelola Produk (admin only) --}}
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('admin.pos.products') }}"
+                   wire:navigate
+                   class="flex items-center gap-3 px-4 py-2.5 ml-4 rounded-xl transition-all duration-300 group text-sm
+                   {{ request()->routeIs('admin.pos.products')
+                      ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
+                      : 'text-slate-500 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <span>Kelola Produk</span>
+                </a>
+            @endif
 
-            <!-- Laporan -->
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.laporan') }}"
-                       wire:navigate
-                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
-                       {{ request()->routeIs('admin.laporan')
-                          ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
-                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
-                        <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span class="text-sm">Laporan</span>
-                    </a>
-                @endif
-            @endauth
+            <!-- Laporan (admin only) -->
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('admin.laporan') }}"
+                   wire:navigate
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+                   {{ request()->routeIs('admin.laporan')
+                      ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
+                    <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-sm">Laporan</span>
+                </a>
+            @endif
 
-            <!-- Galeri -->
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.gallery') }}"
-                       wire:navigate
-                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
-                       {{ request()->routeIs('admin.gallery')
-                          ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
-                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
-                        <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span class="text-sm">Galeri Foto</span>
-                    </a>
-                @endif
-            @endauth
+            <!-- Galeri (admin only) -->
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('admin.gallery') }}"
+                   wire:navigate
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+                   {{ request()->routeIs('admin.gallery')
+                      ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
+                    <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-sm">Galeri Foto</span>
+                </a>
+            @endif
 
             <!-- Manajemen User (admin only) -->
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.users') }}"
-                       wire:navigate
-                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
-                       {{ request()->routeIs('admin.users')
-                          ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
-                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
-                        <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <span class="text-sm">Manajemen User</span>
-                    </a>
-                @endif
-            @endauth
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('admin.users') }}"
+                   wire:navigate
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+                   {{ request()->routeIs('admin.users')
+                      ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-600 font-semibold shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:translate-x-1' }}">
+                    <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span class="text-sm">Manajemen User</span>
+                </a>
+            @endif
         </nav>
     </div>
 

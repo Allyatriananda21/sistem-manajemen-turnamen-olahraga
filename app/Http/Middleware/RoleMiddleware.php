@@ -34,7 +34,14 @@ class RoleMiddleware
                 ->withErrors(['email' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.']);
         }
 
-        if (! in_array($user->role, $roles, strict: true)) {
+        // Flatten roles: support both variadic args and comma-separated strings
+        // e.g. middleware('role:admin,wasit') passes ["admin,wasit"] as $roles
+        $allowedRoles = array_merge(...array_map(
+            fn (string $role) => array_map('trim', explode(',', $role)),
+            $roles
+        ));
+
+        if (! in_array($user->role, $allowedRoles, strict: true)) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 

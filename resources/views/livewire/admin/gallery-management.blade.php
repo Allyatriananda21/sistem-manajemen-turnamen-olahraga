@@ -16,7 +16,7 @@
                 <flux:heading size="lg">Unggah Foto</flux:heading>
                 <flux:separator />
 
-                <form wire:submit="upload" class="space-y-4">
+                <form wire:submit="savePhoto" class="space-y-4">
 
                     {{-- File input --}}
                     <flux:field>
@@ -73,10 +73,10 @@
                         icon="arrow-up-tray"
                         class="w-full"
                         wire:loading.attr="disabled"
-                        wire:target="photo,upload"
+                        wire:target="photo,savePhoto"
                     >
-                        <span wire:loading.remove wire:target="upload">Unggah Foto</span>
-                        <span wire:loading wire:target="upload">Mengunggah...</span>
+                        <span wire:loading.remove wire:target="savePhoto">Unggah Foto</span>
+                        <span wire:loading wire:target="savePhoto">Mengunggah...</span>
                     </flux:button>
                 </form>
 

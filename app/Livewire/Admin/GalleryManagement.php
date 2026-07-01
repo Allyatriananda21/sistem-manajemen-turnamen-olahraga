@@ -6,6 +6,7 @@ use App\Models\Gallery;
 use App\Models\GameMatch;
 use Flux\Flux;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -26,10 +27,12 @@ class GalleryManagement extends Component
     public $photo = null;
 
     public string $caption = '';
+
     public string $matchId = '';
 
     // Delete modal state
     public bool $showDeleteModal = false;
+
     public ?int $deletingPhotoId = null;
 
     // -----------------------------------------------------------------------
@@ -55,34 +58,25 @@ class GalleryManagement extends Component
     // Upload
     // -----------------------------------------------------------------------
 
-    public function upload(): void
-{
-    \Log::info('=== upload() method dipanggil ===');
+    public function savePhoto(): void
+    {
+        $this->validate([
+            'photo' => ['required', 'image', 'max:4096'],
+        ]);
 
-    $this->validateOnly('photo');
-
-    try {
         $path = $this->photo->store('gallery', 'public');
-        \Log::info('=== file tersimpan: ' . $path);
 
         Gallery::create([
-            'match_id'   => $this->matchId ?: null,
+            'match_id' => $this->matchId ?: null,
             'image_path' => $path,
-            'caption'    => $this->caption ?: null,
+            'caption' => $this->caption ?: null,
         ]);
-        \Log::info('=== record gallery berhasil dibuat ===');
 
         $this->reset(['photo', 'caption', 'matchId']);
         $this->resetPage();
 
         Flux::toast(variant: 'success', text: 'Foto berhasil diunggah.');
-        \Log::info('=== upload() selesai total ===');
-    } catch (\Throwable $e) {
-        \Log::error('=== upload() GAGAL: ' . $e->getMessage());
-        report($e);
-        Flux::toast(variant: 'danger', text: 'Gagal: ' . $e->getMessage());
     }
-}
 
     // -----------------------------------------------------------------------
     // Delete
@@ -99,14 +93,14 @@ class GalleryManagement extends Component
         $photo = Gallery::findOrFail($this->deletingPhotoId);
 
         // Remove file from storage
-        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($photo->image_path)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($photo->image_path);
+        if (Storage::disk('public')->exists($photo->image_path)) {
+            Storage::disk('public')->delete($photo->image_path);
         }
 
         $photo->delete();
 
-        $this->showDeleteModal   = false;
-        $this->deletingPhotoId   = null;
+        $this->showDeleteModal = false;
+        $this->deletingPhotoId = null;
 
         Flux::toast(variant: 'danger', text: 'Foto berhasil dihapus.');
     }

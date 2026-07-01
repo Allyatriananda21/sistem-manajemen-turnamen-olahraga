@@ -31,23 +31,29 @@ Route::middleware(['auth'])->group(function () {
             ->name('admin.teams.players');
         Route::get('admin/fixtures', FixtureGenerator::class)->name('admin.fixtures');
         Route::get('admin/bracket', BracketView::class)->name('admin.bracket');
-        Route::get('admin/matches', MatchList::class)->name('admin.matches');
-        Route::get('admin/matches/{match}/control', MatchControlPanel::class)
-            ->middleware('role:admin,wasit')
-            ->name('admin.matches.control');
         Route::get('admin/matches/{match}/statistics', MatchStatisticsInput::class)
             ->middleware('role:admin,wasit')
             ->name('admin.matches.statistics');
-        Route::get('admin/standings', StandingsTable::class)
-            ->middleware('role:admin,wasit')
-            ->name('admin.standings');
-        Route::get('admin/pos/products', PosProductManagement::class)->name('admin.pos.products');
-        Route::get('admin/pos', PosCashier::class)
-            ->middleware('role:admin,kasir')
-            ->name('admin.pos');
         Route::get('admin/gallery', GalleryManagement::class)->name('admin.gallery');
         Route::get('admin/laporan', Report::class)->name('admin.laporan');
     });
+});
+
+// Kelola Produk POS: diakses admin dan kasir (kasir read-only via view)
+Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
+    Route::get('admin/pos/products', PosProductManagement::class)->name('admin.pos.products');
+});
+
+// Pertandingan & Klasemen: diakses admin dan wasit
+Route::middleware(['auth', 'role:admin,wasit'])->group(function () {
+    Route::get('admin/matches', MatchList::class)->name('admin.matches');
+    Route::get('admin/matches/{match}/control', MatchControlPanel::class)->name('admin.matches.control');
+    Route::get('admin/standings', StandingsTable::class)->name('admin.standings');
+});
+
+// Kasir POS: diakses admin dan kasir
+Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
+    Route::get('admin/pos', PosCashier::class)->name('admin.pos');
 });
 
 require __DIR__.'/settings.php';

@@ -6,9 +6,11 @@
             <flux:heading size="xl">Produk POS</flux:heading>
             <flux:text class="mt-1 text-slate-500">Kelola produk kantin dan merchandise untuk event.</flux:text>
         </div>
+        @if(auth()->user()->isAdmin())
         <flux:button wire:click="openCreate" variant="primary" icon="plus">
             Tambah Produk
         </flux:button>
+        @endif
     </div>
 
     {{-- Search --}}
@@ -26,7 +28,9 @@
                 <flux:table.column>Nama Produk</flux:table.column>
                 <flux:table.column class="text-right">Harga</flux:table.column>
                 <flux:table.column class="text-center">Stok</flux:table.column>
+                @if(auth()->user()->isAdmin())
                 <flux:table.column class="text-right">Aksi</flux:table.column>
+                @endif
             </flux:table.columns>
 
             <flux:table.rows>
@@ -59,6 +63,7 @@
                         </flux:table.cell>
 
                         {{-- Aksi --}}
+                        @if(auth()->user()->isAdmin())
                         <flux:table.cell class="text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <flux:button
@@ -79,6 +84,7 @@
                                 </flux:button>
                             </div>
                         </flux:table.cell>
+                        @endif
 
                     </flux:table.row>
                 @empty
@@ -111,6 +117,7 @@
         </flux:text>
     @endif
 
+    @if(auth()->user()->isAdmin())
     {{-- Create / Edit Modal --}}
     <flux:modal wire:model.self="showFormModal" class="md:w-[28rem]">
         <form wire:submit="save" class="space-y-5">
@@ -204,5 +211,6 @@
             </div>
         </div>
     </flux:modal>
+    @endif
 
 </div>
