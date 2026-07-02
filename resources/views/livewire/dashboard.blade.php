@@ -1,13 +1,13 @@
 <div class="space-y-6">
 
     {{-- Filter Panel --}}
-    <flux:card class="space-y-4">
+    <flux:card class="filter-card space-y-4 bg-[#E4FD97] border-[#c8e87d]">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2">
-                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4 text-[#3a5a2a] dark:text-[#E4FD97]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
                 </svg>
-                <flux:heading size="sm" class="text-slate-600 dark:text-slate-400">Filter Dashboard</flux:heading>
+                <flux:heading size="sm" class="text-[#1e2b1d] dark:text-[#E4FD97]">Filter Dashboard</flux:heading>
             </div>
 
             @if ($filterDateFrom || $filterDateTo || $filterRound || $filterTeamId !== '')
@@ -86,7 +86,7 @@
     </flux:card>
 
     {{-- Competition Overview Widget --}}
-    <flux:card class="space-y-5">
+    <flux:card class="secondary-card space-y-5 bg-[#E4FD97] border-[#c8e87d]">
 
         {{-- Header --}}
         <div class="flex items-center justify-between">
@@ -185,7 +185,7 @@
     </flux:card>
 
     {{-- Revenue Chart --}}
-    <flux:card class="space-y-5">
+    <flux:card class="secondary-card space-y-5 bg-[#E4FD97] border-[#c8e87d]">
 
         <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-green-500 to-teal-600 text-white shadow-md shadow-green-500/20">
@@ -218,7 +218,7 @@
     </flux:card>
 
     {{-- Participation Statistics Widget --}}
-    <flux:card class="space-y-5">
+    <flux:card class="secondary-card space-y-5 bg-[#E4FD97] border-[#c8e87d]">
 
         <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-500 to-pink-500 text-white shadow-md shadow-violet-500/20">
@@ -303,7 +303,7 @@
     </flux:card>
 
     {{-- Fixtures Summary Card --}}
-    <flux:card class="space-y-5">
+    <flux:card class="secondary-card space-y-5 bg-[#E4FD97] border-[#c8e87d]">
 
         {{-- Header --}}
         <div class="flex items-center justify-between">

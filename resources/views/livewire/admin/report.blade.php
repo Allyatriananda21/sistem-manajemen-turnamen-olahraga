@@ -10,7 +10,7 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
         {{-- Registrasi --}}
-        <flux:card class="flex flex-col gap-2">
+        <flux:card class="secondary-card flex flex-col gap-2 bg-[#E4FD97] border-[#c8e87d]">
             <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/30">
                     <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@
         </flux:card>
 
         {{-- Retail/Kantin --}}
-        <flux:card class="flex flex-col gap-2">
+        <flux:card class="secondary-card flex flex-col gap-2 bg-[#E4FD97] border-[#c8e87d]">
             <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/30">
                     <svg class="h-5 w-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@
         </flux:card>
 
         {{-- Denda --}}
-        <flux:card class="flex flex-col gap-2">
+        <flux:card class="secondary-card flex flex-col gap-2 bg-[#E4FD97] border-[#c8e87d]">
             <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 dark:bg-red-900/30">
                     <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@
         </flux:card>
 
         {{-- Total Keseluruhan --}}
-        <flux:card class="flex flex-col gap-2 border-indigo-200 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/30">
+        <flux:card class="secondary-card flex flex-col gap-2 border-indigo-200 bg-[#E4FD97] dark:border-indigo-800 dark:bg-indigo-950/30">
             <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/50">
                     <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@
     </div>
 
     {{-- Recent Transactions Table --}}
-    <flux:card class="overflow-hidden p-0">
+    <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
         <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
             <flux:heading size="lg">10 Transaksi Terbaru</flux:heading>
         </div>

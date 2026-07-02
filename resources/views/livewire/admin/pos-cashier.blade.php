@@ -117,7 +117,7 @@
         <div class="flex flex-col gap-4 lg:col-span-2">
 
             {{-- Cart Card --}}
-            <flux:card class="flex flex-col gap-4">
+            <flux:card class="secondary-card flex flex-col gap-4 bg-[#E4FD97] border-[#c8e87d]">
                 <div class="flex items-center justify-between">
                     <flux:heading size="lg">Keranjang</flux:heading>
                     @if (! empty($cart))
@@ -195,7 +195,7 @@
             </flux:card>
 
             {{-- Payment Card --}}
-            <flux:card class="space-y-4">
+            <flux:card class="secondary-card space-y-4 bg-[#E4FD97] border-[#c8e87d]">
                 <flux:heading size="lg">Pembayaran</flux:heading>
                 <flux:separator />
 
@@ -336,7 +336,7 @@
                 {{-- RIGHT: Payment form for selected team --}}
                 <div>
                     @if ($this->selectedTeam)
-                        <flux:card class="space-y-5">
+                        <flux:card class="secondary-card space-y-5 bg-[#E4FD97] border-[#c8e87d]">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <flux:heading size="lg">{{ $this->selectedTeam->name }}</flux:heading>

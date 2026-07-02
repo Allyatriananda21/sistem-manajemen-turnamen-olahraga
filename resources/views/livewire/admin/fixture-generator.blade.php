@@ -10,7 +10,7 @@
 
         {{-- Left: Form Generator --}}
         <div class="space-y-5 lg:col-span-1">
-            <flux:card class="space-y-5">
+            <flux:card class="secondary-card space-y-5 bg-[#E4FD97] border-[#c8e87d]">
                 <flux:heading size="lg">Pengaturan</flux:heading>
                 <flux:separator />
 
@@ -91,7 +91,7 @@
 
         {{-- Right: Approved Teams Preview --}}
         <div class="lg:col-span-2">
-            <flux:card class="space-y-4">
+            <flux:card class="secondary-card space-y-4 bg-[#E4FD97] border-[#c8e87d]">
                 <flux:heading size="lg">Tim yang Akan Dijadwalkan</flux:heading>
                 <flux:separator />
 

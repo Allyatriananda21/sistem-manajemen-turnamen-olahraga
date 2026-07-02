@@ -7,31 +7,33 @@
     </div>
 
     {{-- Filters --}}
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <flux:input
-            wire:model.live.debounce.300ms="search"
-            placeholder="Cari nama tim..."
-            icon="magnifying-glass"
-            class="sm:max-w-xs"
-        />
+    <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-3">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <flux:input
+                wire:model.live.debounce.300ms="search"
+                placeholder="Cari nama tim..."
+                icon="magnifying-glass"
+                class="sm:max-w-xs"
+            />
 
-        <select wire:model.live="statusFilter" class="sm:w-44 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="all">Semua Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="disqualified">Disqualified</option>
-        </select>
+            <select wire:model.live="statusFilter" class="sm:w-44 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all">Semua Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="disqualified">Disqualified</option>
+            </select>
 
-        {{-- Active filter badge --}}
-        @if ($search || $statusFilter !== 'all')
-            <flux:badge color="blue" class="self-start sm:self-auto">
-                {{ $teams->total() }} hasil ditemukan
-            </flux:badge>
-        @endif
-    </div>
+            {{-- Active filter badge --}}
+            @if ($search || $statusFilter !== 'all')
+                <flux:badge color="blue" class="self-start sm:self-auto">
+                    {{ $teams->total() }} hasil ditemukan
+                </flux:badge>
+            @endif
+        </div>
+    </flux:card>
 
     {{-- Teams Table --}}
-    <flux:card class="overflow-hidden p-0">
+    <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
         <flux:table>
             <flux:table.columns>
                 <flux:table.column sortable>Nama Tim</flux:table.column>
@@ -123,7 +125,7 @@
                                 {{-- Approve: hanya tampil kalau status masih pending --}}
                                 @if ($team->status === 'pending')
                                     <flux:button
-                                        wire:click="confirmAction({{ $team->id }}, 'approve')"
+                                        wire:click="openConfirmModal({{ $team->id }}, 'approve')"
                                         size="sm"
                                         variant="primary"
                                         icon="check"
@@ -135,7 +137,7 @@
                                 {{-- Disqualify: tampil selama belum disqualified --}}
                                 @if ($team->status !== 'disqualified')
                                     <flux:button
-                                        wire:click="confirmAction({{ $team->id }}, 'disqualify')"
+                                        wire:click="openConfirmModal({{ $team->id }}, 'disqualify')"
                                         size="sm"
                                         variant="danger"
                                         icon="x-mark"
@@ -199,13 +201,16 @@
             </div>
 
             <div class="flex justify-end gap-3">
-                <flux:modal.close>
-                    <flux:button variant="ghost" wire:click="$set('showConfirmModal', false)">
-                        Batal
-                    </flux:button>
-                </flux:modal.close>
+                <flux:button
+                    type="button"
+                    variant="ghost"
+                    wire:click="$set('showConfirmModal', false)"
+                >
+                    Batal
+                </flux:button>
 
                 <flux:button
+                    type="button"
                     wire:click="executeAction"
                     :variant="$confirmAction === 'approve' ? 'primary' : 'danger'"
                 >

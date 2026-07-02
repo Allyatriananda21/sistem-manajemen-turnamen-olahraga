@@ -45,7 +45,7 @@ class TeamList extends Component
     /**
      * Open confirmation modal for the given team and action.
      */
-    public function confirmAction(int $teamId, string $action): void
+    public function openConfirmModal(int $teamId, string $action): void
     {
         $team = TournamentTeam::findOrFail($teamId);
 

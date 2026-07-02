@@ -78,7 +78,7 @@ test('team becomes approved only after admin approve action', function () {
     // Simulate admin confirming action in Livewire TeamList component
     Livewire::actingAs($admin)
         ->test(\App\Livewire\Admin\TeamList::class)
-        ->call('confirmAction', $team->id, 'approve')
+        ->call('openConfirmModal', $team->id, 'approve')
         ->call('executeAction');
 
     $team->refresh();
@@ -102,7 +102,7 @@ test('approved team gets disqualified only after explicit disqualify action', fu
 
     Livewire::actingAs($admin)
         ->test(\App\Livewire\Admin\TeamList::class)
-        ->call('confirmAction', $team->id, 'disqualify')
+        ->call('openConfirmModal', $team->id, 'disqualify')
         ->call('executeAction');
 
     $team->refresh();

@@ -29,13 +29,13 @@
                 type="text"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Cari nama atau email..."
-                class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                class="w-full rounded-lg border border-[#c8e87d] dark:border-[rgba(228,253,151,0.25)] bg-[#E4FD97] dark:bg-[#2a3d1a] pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
         </div>
     </div>
 
     {{-- Users Table --}}
-    <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+    <div class="overflow-hidden rounded-xl border border-[#c8e87d] bg-[#E4FD97] dark:border-[rgba(228,253,151,0.25)] dark:bg-[#2a3d1a] shadow-sm">
         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
             <thead class="bg-slate-50 dark:bg-slate-800">
                 <tr>

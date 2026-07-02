@@ -9,12 +9,14 @@
 
         {{-- Round / Pool filter --}}
         @if ($this->availableRounds->isNotEmpty())
-            <select wire:model.live="roundFilter" class="sm:w-52 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="">Semua Babak</option>
-                @foreach ($this->availableRounds as $round)
-                    <option :value="$round">{{ $round }}</option>
-                @endforeach
-            </select>
+            <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-3">
+                <select wire:model.live="roundFilter" class="sm:w-52 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Semua Babak</option>
+                    @foreach ($this->availableRounds as $round)
+                        <option :value="$round">{{ $round }}</option>
+                    @endforeach
+                </select>
+            </flux:card>
         @endif
     </div>
 
@@ -29,7 +31,7 @@
     @endif
 
     {{-- Standings Table --}}
-    <flux:card class="overflow-hidden p-0">
+    <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
         <flux:table>
             <flux:table.columns>
                 <flux:table.column class="w-12 text-center">#</flux:table.column>

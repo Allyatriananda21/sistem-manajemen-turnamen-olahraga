@@ -22,7 +22,7 @@
     />
 
     {{-- Products Table --}}
-    <flux:card class="overflow-hidden p-0">
+    <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
         <flux:table>
             <flux:table.columns>
                 <flux:table.column>Nama Produk</flux:table.column>

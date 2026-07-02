@@ -8,8 +8,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ─── Brand tokens ─── */
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Space Grotesk', sans-serif;
 
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -37,7 +39,6 @@
 }
 
 @layer base {
-
     *,
     ::after,
     ::before,
@@ -45,22 +46,255 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+
+    .dark body {
+        background-color: #1e2b1d !important;
+        color: #f8fafc !important;
+    }
 }
 
+/* ════════════════════════════════════════════════════════
+   TrophyHub – Dark Mode Surface Overrides
+   Selaraskan semua komponen Flux & elemen native dengan
+   tema dark green landing page (#1e2b1d + #E4FD97)
+   ════════════════════════════════════════════════════════ */
+
+/* ── Filter Panel Card (secondary/brand color) ── */
+[data-flux-card].filter-card,
+[data-flux-card].secondary-card {
+    background-color: #E4FD97 !important;
+    border-color: #c8e87d !important;
+}
+.dark [data-flux-card].filter-card,
+.dark [data-flux-card].secondary-card {
+    background-color: #2a3d1a !important;
+    border-color: rgba(228,253,151,0.25) !important;
+}
+
+/* ── Flux Card ── */
+.dark [data-flux-card] {
+    background-color: #243323 !important;
+    border-color: rgba(228,253,151,0.12) !important;
+}
+
+/* ── Flux Table header background ── */
+.dark [data-flux-columns] {
+    background-color: #1e2b1d !important;
+}
+
+/* ── Flux Table column (th) ── */
+.dark [data-flux-column] {
+    background-color: #1e2b1d !important;
+    border-color: rgba(228,253,151,0.08) !important;
+    color: #a3c99e !important;
+}
+
+/* ── Flux Table rows background (tbody tr) ── */
+.dark [data-flux-row] {
+    background-color: #243323 !important;
+    border-color: rgba(228,253,151,0.05) !important;
+}
+
+.dark [data-flux-row]:hover {
+    background-color: rgba(228,253,151,0.05) !important;
+}
+
+/* ── Flux Table cells ── */
+.dark [data-flux-cell] {
+    color: #e2e8f0 !important;
+    border-color: rgba(228,253,151,0.05) !important;
+}
+
+/* ── Flux Input: dark:bg-white/10 → dark green surface ── */
+.dark [data-flux-control],
+.dark [data-flux-input] input,
+.dark input[data-flux-control] {
+    background-color: #2a3a29 !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    color: #e2e8f0 !important;
+}
+
+/* ── Flux Modal/Dialog: dark:bg-zinc-800 → dark green ── */
+.dark dialog[class*="bg-white"],
+.dark dialog[class*="bg-zinc"] {
+    background-color: #243323 !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Selector tambahan untuk dialog element */
+.dark dialog {
+    background-color: #243323 !important;
+}
+
+/* ── Flux Table ── */
+.dark [data-flux-table] {
+    color: #e2e8f0 !important;
+}
+
+/* Sudah ditangani di section Flux Card & Table di atas */
+
+/* ── Flux Separator: dark:bg-white/20 → subtler ── */
+.dark [data-flux-separator] {
+    background-color: rgba(255,255,255,0.07) !important;
+}
+
+/* ── Flux Button variants ── */
+.dark [data-flux-button][data-variant="primary"] {
+    background-color: #E4FD97 !important;
+    color: #1e2b1d !important;
+    border-color: transparent !important;
+    font-weight: 700 !important;
+}
+.dark [data-flux-button][data-variant="primary"]:hover {
+    background-color: #d2f075 !important;
+}
+.dark [data-flux-button][data-variant="ghost"]:hover {
+    background-color: rgba(255,255,255,0.06) !important;
+    color: #f8fafc !important;
+}
+
+/* ── Flux Dropdown/Menu panel: dark:bg-zinc-800 ── */
+.dark [data-flux-menu],
+.dark [popover] {
+    background-color: #243323 !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* ── Flux Heading ── */
+.dark [data-flux-heading] {
+    color: #f8fafc !important;
+}
+
+/* ── Flux Badge zinc → lime tint ── */
+.dark [data-flux-badge][data-color="zinc"] {
+    background-color: rgba(228,253,151,0.08) !important;
+    color: #c8e87d !important;
+    border-color: rgba(228,253,151,0.15) !important;
+}
+
+/* ── Native select/input yang hard-coded di blade views ── */
+.dark select,
+.dark input[type="text"],
+.dark input[type="date"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark textarea {
+    background-color: #2a3a29 !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    color: #e2e8f0 !important;
+    color-scheme: dark;
+}
+
+.dark select option {
+    background-color: #243323;
+    color: #e2e8f0;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #4b5563 !important;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6) sepia(1) saturate(2) hue-rotate(60deg);
+    opacity: 0.6;
+}
+
+/* ── bg-white / bg-slate overrides (non-Flux inline classes) ── */
+.dark .bg-white {
+    background-color: #243323 !important;
+}
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
+    background-color: #2a3a29 !important;
+}
+.dark .bg-slate-800\/50,
+.dark .bg-slate-900 {
+    background-color: #1e2b1d !important;
+}
+
+/* ── Stat card color boxes: selaraskan warna bg dengan tema hijau ── */
+.dark .bg-indigo-50 {
+    background-color: rgba(99,102,241,0.12) !important;
+}
+.dark .bg-indigo-900\/20 {
+    background-color: rgba(99,102,241,0.12) !important;
+}
+.dark .bg-purple-50 {
+    background-color: rgba(168,85,247,0.12) !important;
+}
+.dark .bg-purple-900\/20 {
+    background-color: rgba(168,85,247,0.12) !important;
+}
+.dark .bg-green-50 {
+    background-color: rgba(34,197,94,0.10) !important;
+}
+.dark .bg-green-900\/20 {
+    background-color: rgba(34,197,94,0.10) !important;
+}
+.dark .bg-amber-50 {
+    background-color: rgba(245,158,11,0.10) !important;
+}
+.dark .bg-amber-900\/20 {
+    background-color: rgba(245,158,11,0.10) !important;
+}
+.dark .bg-blue-50 {
+    background-color: rgba(59,130,246,0.10) !important;
+}
+.dark .bg-blue-900\/20 {
+    background-color: rgba(59,130,246,0.10) !important;
+}
+.dark .bg-zinc-50 {
+    background-color: rgba(228,253,151,0.05) !important;
+}
+.dark .bg-zinc-800\/40 {
+    background-color: rgba(228,253,151,0.04) !important;
+}
+.dark .bg-red-50 {
+    background-color: rgba(239,68,68,0.10) !important;
+}
+.dark .bg-red-900\/20 {
+    background-color: rgba(239,68,68,0.10) !important;
+}
+
+/* ── Border color overrides ── */
+.dark .border-slate-200,
+.dark .border-slate-700,
+.dark .border-slate-800,
+.dark .border-zinc-200,
+.dark .border-zinc-700 {
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ── Focus ring → lime ── */
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(228,253,151,0.3) !important;
+    border-color: rgba(228,253,151,0.4) !important;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #1e2b1d; }
+::-webkit-scrollbar-thumb { background: #2d3e2c; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #E4FD97; }
+
+/* ════════════════════════════════════════════════════════
+   Flux field helpers
+   ════════════════════════════════════════════════════════ */
 [data-flux-field]:not(ui-radio, ui-checkbox) {
     @apply grid gap-2;
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply !mb-0 !leading-tight;
 }
 
 input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+    @apply outline-hidden;
 }
-
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */

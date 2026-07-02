@@ -20,7 +20,21 @@
     <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
         <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
             @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
+                <nav class="flex items-center justify-between gap-4">
+                    {{-- TrophyHub Logo --}}
+                    <a href="/" class="flex items-center gap-3 group">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105"
+                             style="background: rgba(228,253,151,0.1); border: 1px solid rgba(228,253,151,0.2); background-color: #1b1b18;">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #E4FD97;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0h4m-4 0H8m12 3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-bold text-sm leading-tight tracking-wide text-[#1b1b18] dark:text-[#EDEDEC]">TrophyHub</span>
+                            <span class="text-[10px] font-semibold tracking-widest uppercase" style="color: #E4FD97;">Tournament</span>
+                        </div>
+                    </a>
+                    <div class="flex items-center gap-4">
                     @auth
                         <a
                             href="{{ route('admin.dashboard') }}"
@@ -44,6 +58,7 @@
                             </a>
                         @endif
                     @endauth
+                    </div>
                 </nav>
             @endif
         </header>

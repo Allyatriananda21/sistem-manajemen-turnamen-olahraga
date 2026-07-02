@@ -12,31 +12,33 @@
     </div>
 
     {{-- Filters --}}
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <flux:input
-            wire:model.live.debounce.300ms="search"
-            placeholder="Cari nama tim..."
-            icon="magnifying-glass"
-            class="sm:max-w-xs"
-        />
+    <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-3">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <flux:input
+                wire:model.live.debounce.300ms="search"
+                placeholder="Cari nama tim..."
+                icon="magnifying-glass"
+                class="sm:max-w-xs"
+            />
 
-        <select wire:model.live="statusFilter" class="sm:w-44 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="all">Semua Status</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="done">Done</option>
-            <option value="cancelled">Cancelled</option>
-        </select>
+            <select wire:model.live="statusFilter" class="sm:w-44 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all">Semua Status</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="done">Done</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
 
-        @if ($search || $statusFilter !== 'all')
-            <flux:badge color="blue" class="self-start sm:self-auto">
-                {{ $matches->total() }} hasil
-            </flux:badge>
-        @endif
-    </div>
+            @if ($search || $statusFilter !== 'all')
+                <flux:badge color="blue" class="self-start sm:self-auto">
+                    {{ $matches->total() }} hasil
+                </flux:badge>
+            @endif
+        </div>
+    </flux:card>
 
     {{-- Matches Table --}}
-    <flux:card class="overflow-hidden p-0">
+    <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
         <flux:table>
             <flux:table.columns>
                 <flux:table.column>Pertandingan</flux:table.column>
