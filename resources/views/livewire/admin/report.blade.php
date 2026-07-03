@@ -2,7 +2,7 @@
 
     {{-- Page Header --}}
     <div>
-        <flux:heading size="xl">Laporan Keuangan</flux:heading>
+        <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Laporan Keuangan</flux:heading>
         <flux:text class="mt-1 text-slate-500">Ringkasan total pendapatan turnamen dari seluruh transaksi POS.</flux:text>
     </div>
 

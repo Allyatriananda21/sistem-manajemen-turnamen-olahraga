@@ -3,7 +3,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Kasir POS</flux:heading>
+            <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Kasir POS</flux:heading>
             <flux:text class="mt-0.5 text-slate-500">Cari produk, tambahkan ke keranjang, hitung kembalian.</flux:text>
         </div>
         <flux:button href="{{ route('admin.pos.products') }}" wire:navigate variant="ghost" size="sm" icon="squares-2x2">

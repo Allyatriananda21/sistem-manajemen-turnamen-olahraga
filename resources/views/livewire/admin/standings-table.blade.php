@@ -3,7 +3,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Klasemen</flux:heading>
+            <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Klasemen</flux:heading>
             <flux:text class="mt-1 text-slate-500">Peringkat tim berdasarkan poin dan selisih gol.</flux:text>
         </div>
 

@@ -2,7 +2,7 @@
 
     {{-- Page Header --}}
     <div>
-        <flux:heading size="xl">Bracket Visual</flux:heading>
+        <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Bracket Visual</flux:heading>
         <flux:text class="mt-1 text-slate-500">Bagan pertandingan knockout. Klik kotak untuk melihat detail.</flux:text>
     </div>
 

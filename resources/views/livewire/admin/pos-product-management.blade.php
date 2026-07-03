@@ -3,7 +3,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Produk POS</flux:heading>
+            <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Produk POS</flux:heading>
             <flux:text class="mt-1 text-slate-500">Kelola produk kantin dan merchandise untuk event.</flux:text>
         </div>
         @if(auth()->user()->isAdmin())

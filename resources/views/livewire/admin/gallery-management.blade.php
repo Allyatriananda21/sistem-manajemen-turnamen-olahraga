@@ -2,7 +2,7 @@
 
     {{-- Page Header --}}
     <div>
-        <flux:heading size="xl">Galeri Foto</flux:heading>
+        <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Galeri Foto</flux:heading>
         <flux:text class="mt-1 text-slate-500">Unggah dan kelola foto dokumentasi turnamen.</flux:text>
     </div>
 

@@ -3,7 +3,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Manajemen User</h1>
+            <h1 class="text-2xl font-bold tracking-tight text-[#4a7c30] dark:text-[#E4FD97]">Manajemen User</h1>
             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola akun panitia, wasit, dan kasir event.</p>
         </div>
         <button

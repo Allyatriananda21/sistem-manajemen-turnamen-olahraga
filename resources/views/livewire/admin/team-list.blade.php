@@ -2,7 +2,7 @@
 
     {{-- Page Header --}}
     <div>
-        <flux:heading size="xl">Daftar Tim Peserta</flux:heading>
+        <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Daftar Tim Peserta</flux:heading>
         <flux:text class="mt-1 text-slate-500">Semua tim yang telah mendaftar ke turnamen.</flux:text>
     </div>
 
