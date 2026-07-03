@@ -34,11 +34,11 @@
                     @endphp
 
                     {{-- Round Column --}}
-                    <div class="flex flex-col" style="min-width: 220px;">
+                    <div class="flex flex-col" style="min-width: 170px;">
 
                         {{-- Round Label --}}
-                        <div class="mb-4 px-3">
-                            <div class="rounded-lg bg-indigo-600 px-3 py-1.5 text-center text-xs font-bold uppercase tracking-wider text-white shadow-sm">
+                        <div class="mb-3 px-2">
+                            <div class="rounded-lg bg-indigo-600 px-2 py-1 text-center text-xs font-bold uppercase tracking-wider text-white shadow-sm">
                                 {{ $roundData['round'] }}
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                                     <button
                                         wire:click="openMatch({{ $match->id }})"
                                         wire:key="bracket-match-{{ $match->id }}"
-                                        class="mx-3 overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-left w-full
+                                        class="mx-2 overflow-hidden rounded-lg border shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-left w-full
                                             {{ $isOngoing ? 'border-blue-400 dark:border-blue-600' : 'border-slate-200 dark:border-slate-700' }}"
                                     >
                                         {{-- Status indicator stripe --}}
@@ -80,14 +80,14 @@
                                         "></div>
 
                                         {{-- Team 1 row --}}
-                                        <div class="flex items-center justify-between gap-2 px-3 py-2
+                                        <div class="flex items-center justify-between gap-1 px-2 py-1.5
                                             {{ $team1IsWinner ? 'bg-green-50 dark:bg-green-900/20' : 'bg-white dark:bg-slate-900' }}">
-                                            <span class="truncate text-sm
+                                            <span class="truncate text-xs
                                                 {{ $team1IsWinner ? 'font-bold text-green-700 dark:text-green-400' : 'text-slate-700 dark:text-slate-300' }}">
                                                 {{ $team1Name }}
                                             </span>
                                             @if ($isDone || $isOngoing)
-                                                <span class="shrink-0 text-sm font-bold tabular-nums
+                                                <span class="shrink-0 text-xs font-bold tabular-nums
                                                     {{ $team1IsWinner ? 'text-green-600' : 'text-slate-500' }}">
                                                     {{ $match->score_team1 }}
                                                 </span>
@@ -98,17 +98,17 @@
                                         <div class="h-px bg-slate-100 dark:bg-slate-800"></div>
 
                                         {{-- Team 2 row --}}
-                                        <div class="flex items-center justify-between gap-2 px-3 py-2
+                                        <div class="flex items-center justify-between gap-1 px-2 py-1.5
                                             {{ $team2IsWinner ? 'bg-green-50 dark:bg-green-900/20' : 'bg-white dark:bg-slate-900' }}">
                                             @if ($isBye)
                                                 <span class="truncate text-xs italic text-slate-400">BYE</span>
                                             @else
-                                                <span class="truncate text-sm
+                                                <span class="truncate text-xs
                                                     {{ $team2IsWinner ? 'font-bold text-green-700 dark:text-green-400' : 'text-slate-700 dark:text-slate-300' }}">
                                                     {{ $team2Name }}
                                                 </span>
                                                 @if ($isDone || $isOngoing)
-                                                    <span class="shrink-0 text-sm font-bold tabular-nums
+                                                    <span class="shrink-0 text-xs font-bold tabular-nums
                                                         {{ $team2IsWinner ? 'text-green-600' : 'text-slate-500' }}">
                                                         {{ $match->score_team2 }}
                                                     </span>
@@ -125,7 +125,7 @@
 
                     {{-- Connector column between rounds --}}
                     @if (! $loop->last)
-                        <div class="flex flex-col justify-around" style="min-width: 24px;">
+                        <div class="flex flex-col justify-around" style="min-width: 16px;">
                             @for ($i = 0; $i < ceil($matchCount / 2); $i++)
                                 <div style="flex: 1; position: relative;">
                                     {{-- Vertical bar connecting two matches to one in next round --}}
@@ -187,7 +187,7 @@
                             <flux:badge color="zinc" class="mt-1">{{ $m->round }}</flux:badge>
                         @endif
                     </div>
-                    <x-status-badge :status="$m->status" size="lg" class="self-start shrink-0" />
+                    <x-status-badge :status="$m->status" size="lg" class="self-start shrink-0 mr-8" />
                 </div>
 
                 <flux:separator />

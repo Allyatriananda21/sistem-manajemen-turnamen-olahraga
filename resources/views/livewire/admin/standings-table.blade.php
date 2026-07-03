@@ -7,13 +7,13 @@
             <flux:text class="mt-1 text-slate-500">Peringkat tim berdasarkan poin dan selisih gol.</flux:text>
         </div>
 
-        {{-- Round / Pool filter --}}
+        {{-- Round filter --}}
         @if ($this->availableRounds->isNotEmpty())
-            <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-3">
-                <select wire:model.live="roundFilter" class="sm:w-52 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-2">
+                <select wire:model.live="roundFilter" class="w-full rounded-lg border border-[#c8e87d] bg-[#E4FD97] dark:bg-[#2a3d1a] px-3 py-1.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#4a7c30] sm:w-48">
                     <option value="">Semua Babak</option>
                     @foreach ($this->availableRounds as $round)
-                        <option :value="$round">{{ $round }}</option>
+                        <option value="{{ $round }}">{{ $round }}</option>
                     @endforeach
                 </select>
             </flux:card>
@@ -30,137 +30,169 @@
         </div>
     @endif
 
-    {{-- Standings Table --}}
-    <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
-        <flux:table>
-            <flux:table.columns>
-                <flux:table.column class="w-12 text-center">#</flux:table.column>
-                <flux:table.column>Tim</flux:table.column>
-                <flux:table.column class="text-center">M</flux:table.column>
-                <flux:table.column class="text-center">W</flux:table.column>
-                <flux:table.column class="text-center">D</flux:table.column>
-                <flux:table.column class="text-center">L</flux:table.column>
-                <flux:table.column class="text-center">GD</flux:table.column>
-                <flux:table.column class="text-center font-bold">PTS</flux:table.column>
-            </flux:table.columns>
+    @if ($this->standings->isEmpty())
+        {{-- Empty state --}}
+        <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-16">
+            <div class="flex flex-col items-center gap-3 text-center">
+                <svg class="h-12 w-12 text-[#4a7c30]/30 dark:text-[#E4FD97]/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <flux:text class="text-[#1e2b1d] dark:text-[#E4FD97]/70">
+                    {{ $roundFilter ? 'Belum ada pertandingan selesai di babak ini.' : 'Klasemen belum tersedia. Selesaikan pertandingan terlebih dahulu.' }}
+                </flux:text>
+                @if (! $roundFilter)
+                    <flux:button href="{{ route('admin.matches') }}" wire:navigate variant="ghost" size="sm">
+                        Lihat Pertandingan
+                    </flux:button>
+                @endif
+            </div>
+        </flux:card>
+    @else
 
-            <flux:table.rows>
-                @forelse ($this->standings as $rank => $standing)
-                    @php $position = $rank + 1; @endphp
-                    <flux:table.row wire:key="standing-{{ $standing->id }}"
-                        @class([
-                            'border-l-4 border-indigo-500 bg-indigo-50/40 dark:bg-indigo-900/10' => $position === 1,
-                        ])
-                    >
-                        {{-- Rank --}}
-                        <flux:table.cell class="text-center">
-                            @if ($position === 1)
-                                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-white shadow-sm">
-                                    1
-                                </span>
-                            @elseif ($position === 2)
-                                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-300 dark:bg-slate-600 text-xs font-bold text-slate-700 dark:text-slate-200">
-                                    2
-                                </span>
-                            @elseif ($position === 3)
-                                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-amber-600/70 text-xs font-bold text-white">
-                                    3
-                                </span>
-                            @else
-                                <span class="text-sm text-slate-400">{{ $position }}</span>
-                            @endif
-                        </flux:table.cell>
+        {{-- ── TOP 3 PODIUM ── --}}
+        @if ($this->standings->count() >= 1)
+            @php
+                $top = $this->standings->take(3);
+                $medals = [
+                    1 => ['bg' => 'bg-amber-400',       'text' => 'text-white',       'ring' => 'ring-amber-400',   'label' => '🥇', 'size' => 'h-14 w-14', 'order' => 'order-2 sm:scale-105'],
+                    2 => ['bg' => 'bg-slate-300 dark:bg-slate-500', 'text' => 'text-slate-700 dark:text-white', 'ring' => 'ring-slate-300 dark:ring-slate-500', 'label' => '🥈', 'size' => 'h-12 w-12', 'order' => 'order-1'],
+                    3 => ['bg' => 'bg-amber-600/70',     'text' => 'text-white',       'ring' => 'ring-amber-600/70', 'label' => '🥉', 'size' => 'h-12 w-12', 'order' => 'order-3'],
+                ];
+            @endphp
+            <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                @foreach ($top as $rank => $standing)
+                    @php
+                        $pos    = $rank + 1;
+                        $medal  = $medals[$pos];
+                    @endphp
+                    <div class="flex flex-col items-center gap-2 rounded-2xl border-2 bg-[#E4FD97] p-4 text-center shadow-sm dark:bg-[#2a3d1a]
+                        {{ $pos === 1 ? 'border-amber-400 dark:border-amber-500' : ($pos === 2 ? 'border-slate-300 dark:border-slate-500' : 'border-amber-600/50') }}
+                        {{ $medal['order'] }}">
 
-                        {{-- Tim --}}
-                        <flux:table.cell>
-                            <div class="flex items-center gap-3">
-                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
-                                    {{ strtoupper(substr($standing->team->name, 0, 2)) }}
-                                </div>
-                                <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                    {{ $standing->team->name }}
-                                </span>
-                            </div>
-                        </flux:table.cell>
+                        {{-- Medal emoji --}}
+                        <span class="text-2xl leading-none">{{ $medal['label'] }}</span>
 
-                        {{-- Played --}}
-                        <flux:table.cell class="text-center">
-                            <span class="text-sm tabular-nums text-slate-600 dark:text-slate-400">{{ $standing->played }}</span>
-                        </flux:table.cell>
+                        {{-- Avatar --}}
+                        <div class="{{ $medal['size'] }} flex shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 font-bold text-white shadow-md ring-2 {{ $medal['ring'] }} select-none
+                            {{ $pos === 1 ? 'text-sm' : 'text-xs' }}">
+                            {{ strtoupper(substr($standing->team->name, 0, 2)) }}
+                        </div>
 
-                        {{-- Win --}}
-                        <flux:table.cell class="text-center">
-                            <span class="text-sm tabular-nums font-medium text-green-600 dark:text-green-400">{{ $standing->win }}</span>
-                        </flux:table.cell>
-
-                        {{-- Draw --}}
-                        <flux:table.cell class="text-center">
-                            <span class="text-sm tabular-nums text-slate-500">{{ $standing->draw }}</span>
-                        </flux:table.cell>
-
-                        {{-- Lose --}}
-                        <flux:table.cell class="text-center">
-                            <span class="text-sm tabular-nums font-medium text-red-500 dark:text-red-400">{{ $standing->lose }}</span>
-                        </flux:table.cell>
-
-                        {{-- Goal Diff --}}
-                        <flux:table.cell class="text-center">
-                            @php $gd = $standing->goal_diff; @endphp
-                            <span @class([
-                                'text-sm tabular-nums font-medium',
-                                'text-green-600 dark:text-green-400' => $gd > 0,
-                                'text-red-500 dark:text-red-400'     => $gd < 0,
-                                'text-slate-400'                     => $gd === 0,
-                            ])>
-                                {{ $gd > 0 ? '+' . $gd : $gd }}
-                            </span>
-                        </flux:table.cell>
+                        {{-- Name --}}
+                        <p class="w-full truncate text-xs font-bold text-[#1e2b1d] dark:text-white sm:text-sm">
+                            {{ $standing->team->name }}
+                        </p>
 
                         {{-- Points --}}
-                        <flux:table.cell class="text-center">
-                            <span @class([
-                                'inline-flex items-center justify-center rounded-lg px-2.5 py-0.5 text-sm font-bold tabular-nums',
-                                'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30' => $position === 1,
-                                'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200' => $position !== 1,
-                            ])>
+                        <div class="rounded-xl px-3 py-1
+                            {{ $pos === 1 ? 'bg-amber-400 text-white' : 'bg-[#1e2b1d]/10 text-[#1e2b1d] dark:bg-white/10 dark:text-white' }}">
+                            <span class="text-lg font-black tabular-nums leading-none">{{ $standing->points }}</span>
+                            <span class="ml-0.5 text-[10px] font-semibold opacity-70">pts</span>
+                        </div>
+
+                        {{-- W / D / L --}}
+                        <div class="flex items-center gap-2 text-[11px] font-medium">
+                            <span class="text-green-600 dark:text-green-400">{{ $standing->win }}W</span>
+                            <span class="text-slate-400">{{ $standing->draw }}D</span>
+                            <span class="text-red-500">{{ $standing->lose }}L</span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- ── FULL TABLE ── --}}
+        <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
+
+            {{-- Table header --}}
+            <div class="grid grid-cols-[2.5rem_1fr_2rem_2rem_2rem_2rem_3rem_3.5rem] items-center gap-0 border-b border-[#c8e87d]/60 px-4 py-2.5 dark:border-[rgba(228,253,151,0.12)]">
+                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">#</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">Tim</span>
+                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">M</span>
+                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-green-600/70">W</span>
+                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">D</span>
+                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-red-500/70">L</span>
+                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">GD</span>
+                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">PTS</span>
+            </div>
+
+            {{-- Rows --}}
+            <div class="divide-y divide-[#c8e87d]/40 dark:divide-[rgba(228,253,151,0.08)]">
+                @foreach ($this->standings as $rank => $standing)
+                    @php
+                        $position = $rank + 1;
+                        $isTop = $position <= 3;
+                    @endphp
+                    <div wire:key="standing-{{ $standing->id }}"
+                         class="grid grid-cols-[2.5rem_1fr_2rem_2rem_2rem_2rem_3rem_3.5rem] items-center gap-0 px-4 py-3 transition-colors duration-100 hover:bg-[#d8f57a]/30 dark:hover:bg-white/5
+                            {{ $position === 1 ? 'bg-amber-50/60 dark:bg-amber-900/10' : '' }}">
+
+                        {{-- Rank --}}
+                        <div class="flex justify-center">
+                            @if ($position === 1)
+                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-[10px] font-black text-white shadow-sm">1</span>
+                            @elseif ($position === 2)
+                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 dark:bg-slate-600 text-[10px] font-black text-slate-700 dark:text-white">2</span>
+                            @elseif ($position === 3)
+                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-600/70 text-[10px] font-black text-white">3</span>
+                            @else
+                                <span class="text-xs font-medium text-[#1e2b1d]/40 dark:text-white/30">{{ $position }}</span>
+                            @endif
+                        </div>
+
+                        {{-- Tim --}}
+                        <div class="flex min-w-0 items-center gap-2.5">
+                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 text-[10px] font-bold text-white shadow-sm select-none">
+                                {{ strtoupper(substr($standing->team->name, 0, 2)) }}
+                            </div>
+                            <span class="truncate text-sm font-semibold text-[#1e2b1d] dark:text-white">
+                                {{ $standing->team->name }}
+                            </span>
+                        </div>
+
+                        {{-- M --}}
+                        <span class="text-center text-sm tabular-nums text-[#1e2b1d]/60 dark:text-slate-400">{{ $standing->played }}</span>
+
+                        {{-- W --}}
+                        <span class="text-center text-sm tabular-nums font-semibold text-green-600 dark:text-green-400">{{ $standing->win }}</span>
+
+                        {{-- D --}}
+                        <span class="text-center text-sm tabular-nums text-[#1e2b1d]/50 dark:text-slate-500">{{ $standing->draw }}</span>
+
+                        {{-- L --}}
+                        <span class="text-center text-sm tabular-nums font-semibold text-red-500 dark:text-red-400">{{ $standing->lose }}</span>
+
+                        {{-- GD --}}
+                        @php $gd = $standing->goal_diff; @endphp
+                        <span class="text-center text-sm tabular-nums font-medium
+                            {{ $gd > 0 ? 'text-green-600 dark:text-green-400' : ($gd < 0 ? 'text-red-500 dark:text-red-400' : 'text-[#1e2b1d]/40 dark:text-white/30') }}">
+                            {{ $gd > 0 ? '+' . $gd : $gd }}
+                        </span>
+
+                        {{-- PTS --}}
+                        <div class="flex justify-center">
+                            <span class="inline-flex items-center justify-center rounded-lg px-2 py-0.5 text-sm font-bold tabular-nums
+                                {{ $position === 1 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-[#1e2b1d]/10 text-[#1e2b1d] dark:bg-white/10 dark:text-white' }}">
                                 {{ $standing->points }}
                             </span>
-                        </flux:table.cell>
+                        </div>
 
-                    </flux:table.row>
-                @empty
-                    <flux:table.row>
-                        <flux:table.cell colspan="8" class="py-12 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                                <flux:text class="text-slate-400">
-                                    {{ $roundFilter ? 'Belum ada pertandingan selesai di babak ini.' : 'Klasemen belum tersedia. Selesaikan pertandingan terlebih dahulu.' }}
-                                </flux:text>
-                                @if (! $roundFilter)
-                                    <flux:button href="{{ route('admin.matches') }}" wire:navigate variant="ghost" size="sm">
-                                        Lihat Pertandingan
-                                    </flux:button>
-                                @endif
-                            </div>
-                        </flux:table.cell>
-                    </flux:table.row>
-                @endforelse
-            </flux:table.rows>
-        </flux:table>
-    </flux:card>
+                    </div>
+                @endforeach
+            </div>
 
-    {{-- Legend --}}
-    @if ($this->standings->isNotEmpty())
-        <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400">
-            <span><strong class="text-slate-500">M</strong> = Main</span>
-            <span><strong class="text-slate-500">W</strong> = Menang</span>
-            <span><strong class="text-slate-500">D</strong> = Seri</span>
-            <span><strong class="text-slate-500">L</strong> = Kalah</span>
-            <span><strong class="text-slate-500">GD</strong> = Selisih Gol</span>
-            <span><strong class="text-slate-500">PTS</strong> = Poin</span>
+        </flux:card>
+
+        {{-- Legend --}}
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-[#1e2b1d]/50 dark:text-slate-500">
+            <span><strong class="text-[#4a7c30] dark:text-[#E4FD97]/70">M</strong> = Main</span>
+            <span><strong class="text-green-600">W</strong> = Menang</span>
+            <span><strong class="text-[#4a7c30] dark:text-[#E4FD97]/70">D</strong> = Seri</span>
+            <span><strong class="text-red-500">L</strong> = Kalah</span>
+            <span><strong class="text-[#4a7c30] dark:text-[#E4FD97]/70">GD</strong> = Selisih Gol</span>
+            <span><strong class="text-indigo-600 dark:text-indigo-400">PTS</strong> = Poin</span>
         </div>
+
     @endif
 
 </div>

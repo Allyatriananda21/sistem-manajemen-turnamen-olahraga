@@ -13,7 +13,7 @@
 
 <!-- Sidebar Container -->
 <aside :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
-       class="fixed top-0 bottom-0 left-0 z-50 w-64 flex flex-col justify-between transition-transform duration-300 ease-in-out md:z-30"
+       class="fixed top-0 bottom-0 left-0 z-50 w-52 flex flex-col justify-between transition-transform duration-300 ease-in-out md:z-30"
        style="background: rgba(30,43,29,0.97); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-right: 1px solid rgba(255,255,255,0.07);">
 
     <!-- Sidebar Header -->
@@ -266,7 +266,6 @@
                     </div>
                     <div class="flex flex-col overflow-hidden min-w-0">
                         <span class="text-sm font-semibold truncate" style="color: #f8fafc; font-family: 'Space Grotesk', sans-serif;">{{ auth()->user()->name }}</span>
-                        <span class="text-xs truncate" style="color: #475569;">{{ auth()->user()->email }}</span>
                     </div>
                 </div>
 

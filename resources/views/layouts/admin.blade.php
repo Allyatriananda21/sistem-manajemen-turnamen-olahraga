@@ -20,7 +20,7 @@
         @include('layouts.partials.sidebar')
 
         <!-- Main Content Area -->
-        <div class="relative z-10 flex-1 flex flex-col min-h-screen md:pl-64">
+        <div class="relative z-10 flex-1 flex flex-col min-h-screen md:pl-52">
 
             <!-- Top Navbar -->
             <header class="sticky top-0 z-30 flex items-center justify-between px-6 py-4 border-b"
