@@ -142,17 +142,14 @@
     color: #e2e8f0 !important;
 }
 
-/* ── Flux Modal/Dialog: dark:bg-zinc-800 → dark green ── */
-.dark dialog[class*="bg-white"],
-.dark dialog[class*="bg-zinc"] {
-    background-color: #243323 !important;
-    border-color: rgba(255,255,255,0.1) !important;
+/* ── Flux Modal/Dialog: warna secondary ── */
+dialog[class*="bg-white"],
+dialog[class*="bg-zinc"] {
+    background-color: #E4FD97 !important;
+    border-color: #c8e87d !important;
 }
 
-/* Selector tambahan untuk dialog element */
-.dark dialog {
-    background-color: #243323 !important;
-}
+/* Selector utama untuk semua dialog/modal Flux */
 
 /* ── Flux Table ── */
 .dark [data-flux-table] {
@@ -358,4 +355,16 @@ select:focus[data-flux-control] {
 /* ── Flux Badge: jarak antara teks dan tombol dismiss (×) ── */
 [data-flux-badge] {
     gap: 0.375rem !important;
+}
+
+/* ── Flux Modal: background warna secondary ── */
+dialog {
+    background-color: #E4FD97 !important;
+    border-color: #c8e87d !important;
+    color: #1e2b1d !important;
+}
+.dark dialog {
+    background-color: #2a3d1a !important;
+    border-color: rgba(228,253,151,0.25) !important;
+    color: #f8fafc !important;
 }

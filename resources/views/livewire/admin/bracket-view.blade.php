@@ -1,10 +1,34 @@
 <div class="space-y-6">
 
     {{-- Page Header --}}
-    <div>
-        <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Bracket Visual</flux:heading>
-        <flux:text class="mt-1 text-slate-500">Bagan pertandingan knockout. Klik kotak untuk melihat detail.</flux:text>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <flux:heading size="xl" class="text-[#4a7c30] dark:text-[#E4FD97]">Bracket Visual</flux:heading>
+            <flux:text class="mt-1 text-slate-500">Bagan pertandingan knockout. Klik kotak untuk melihat detail.</flux:text>
+        </div>
+
+        {{-- Sport filter --}}
+        @if ($this->availableSports->isNotEmpty())
+            <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-2">
+                <select wire:model.live="sportFilter" class="w-full rounded-lg border border-[#c8e87d] bg-[#E4FD97] dark:bg-[#2a3d1a] px-3 py-1.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#4a7c30] sm:w-52">
+                    <option value="">Semua Cabang Olahraga</option>
+                    @foreach ($this->availableSports as $sport)
+                        <option value="{{ $sport }}">{{ $sport }}</option>
+                    @endforeach
+                </select>
+            </flux:card>
+        @endif
     </div>
+
+    {{-- Active sport badge --}}
+    @if ($sportFilter)
+        <div class="flex items-center gap-2">
+            <flux:badge color="indigo">{{ $sportFilter }}</flux:badge>
+            <flux:button wire:click="$set('sportFilter', '')" size="sm" variant="ghost" icon="x-mark">
+                Semua cabang
+            </flux:button>
+        </div>
+    @endif
 
     @if ($this->rounds->isEmpty())
         {{-- Empty state --}}
@@ -70,46 +94,46 @@
                                         wire:click="openMatch({{ $match->id }})"
                                         wire:key="bracket-match-{{ $match->id }}"
                                         class="mx-2 overflow-hidden rounded-lg border shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-left w-full
-                                            {{ $isOngoing ? 'border-blue-400 dark:border-blue-600' : 'border-slate-200 dark:border-slate-700' }}"
+                                            {{ $isOngoing ? 'border-blue-400 dark:border-blue-600' : 'border-[#c8e87d] dark:border-[rgba(228,253,151,0.25)]' }}"
                                     >
                                         {{-- Status indicator stripe --}}
                                         <div class="h-1 w-full
                                             {{ $isDone   ? 'bg-green-500'  : '' }}
                                             {{ $isOngoing ? 'bg-blue-500 animate-pulse' : '' }}
-                                            {{ ! $isDone && ! $isOngoing ? 'bg-slate-200 dark:bg-slate-700' : '' }}
+                                            {{ ! $isDone && ! $isOngoing ? 'bg-[#c8e87d] dark:bg-[rgba(228,253,151,0.25)]' : '' }}
                                         "></div>
 
                                         {{-- Team 1 row --}}
                                         <div class="flex items-center justify-between gap-1 px-2 py-1.5
-                                            {{ $team1IsWinner ? 'bg-green-50 dark:bg-green-900/20' : 'bg-white dark:bg-slate-900' }}">
+                                            {{ $team1IsWinner ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[#E4FD97] dark:bg-[#2a3d1a]' }}">
                                             <span class="truncate text-xs
-                                                {{ $team1IsWinner ? 'font-bold text-green-700 dark:text-green-400' : 'text-slate-700 dark:text-slate-300' }}">
+                                                {{ $team1IsWinner ? 'font-bold text-green-700 dark:text-green-400' : 'text-[#1e2b1d] dark:text-slate-300' }}">
                                                 {{ $team1Name }}
                                             </span>
                                             @if ($isDone || $isOngoing)
                                                 <span class="shrink-0 text-xs font-bold tabular-nums
-                                                    {{ $team1IsWinner ? 'text-green-600' : 'text-slate-500' }}">
+                                                    {{ $team1IsWinner ? 'text-green-600' : 'text-[#4a7c30] dark:text-slate-400' }}">
                                                     {{ $match->score_team1 }}
                                                 </span>
                                             @endif
                                         </div>
 
                                         {{-- Divider --}}
-                                        <div class="h-px bg-slate-100 dark:bg-slate-800"></div>
+                                        <div class="h-px bg-[#c8e87d]/60 dark:bg-[rgba(228,253,151,0.12)]"></div>
 
                                         {{-- Team 2 row --}}
                                         <div class="flex items-center justify-between gap-1 px-2 py-1.5
-                                            {{ $team2IsWinner ? 'bg-green-50 dark:bg-green-900/20' : 'bg-white dark:bg-slate-900' }}">
+                                            {{ $team2IsWinner ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[#E4FD97] dark:bg-[#2a3d1a]' }}">
                                             @if ($isBye)
-                                                <span class="truncate text-xs italic text-slate-400">BYE</span>
+                                                <span class="truncate text-xs italic text-[#4a7c30]/50 dark:text-slate-400">BYE</span>
                                             @else
                                                 <span class="truncate text-xs
-                                                    {{ $team2IsWinner ? 'font-bold text-green-700 dark:text-green-400' : 'text-slate-700 dark:text-slate-300' }}">
+                                                    {{ $team2IsWinner ? 'font-bold text-green-700 dark:text-green-400' : 'text-[#1e2b1d] dark:text-slate-300' }}">
                                                     {{ $team2Name }}
                                                 </span>
                                                 @if ($isDone || $isOngoing)
                                                     <span class="shrink-0 text-xs font-bold tabular-nums
-                                                        {{ $team2IsWinner ? 'text-green-600' : 'text-slate-500' }}">
+                                                        {{ $team2IsWinner ? 'text-green-600' : 'text-[#4a7c30] dark:text-slate-400' }}">
                                                         {{ $match->score_team2 }}
                                                     </span>
                                                 @endif

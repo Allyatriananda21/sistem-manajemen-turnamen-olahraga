@@ -7,26 +7,48 @@
             <flux:text class="mt-1 text-slate-500">Peringkat tim berdasarkan poin dan selisih gol.</flux:text>
         </div>
 
-        {{-- Round filter --}}
-        @if ($this->availableRounds->isNotEmpty())
-            <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-2">
-                <select wire:model.live="roundFilter" class="w-full rounded-lg border border-[#c8e87d] bg-[#E4FD97] dark:bg-[#2a3d1a] px-3 py-1.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#4a7c30] sm:w-48">
-                    <option value="">Semua Babak</option>
-                    @foreach ($this->availableRounds as $round)
-                        <option value="{{ $round }}">{{ $round }}</option>
-                    @endforeach
-                </select>
-            </flux:card>
-        @endif
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            {{-- Sport filter --}}
+            @if ($this->availableSports->isNotEmpty())
+                <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-2">
+                    <select wire:model.live="sportFilter" class="w-full rounded-lg border border-[#c8e87d] bg-[#E4FD97] dark:bg-[#2a3d1a] px-3 py-1.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#4a7c30] sm:w-52">
+                        <option value="">Semua Cabang Olahraga</option>
+                        @foreach ($this->availableSports as $sport)
+                            <option value="{{ $sport }}">{{ $sport }}</option>
+                        @endforeach
+                    </select>
+                </flux:card>
+            @endif
+
+            {{-- Round filter --}}
+            @if ($this->availableRounds->isNotEmpty())
+                <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-2">
+                    <select wire:model.live="roundFilter" class="w-full rounded-lg border border-[#c8e87d] bg-[#E4FD97] dark:bg-[#2a3d1a] px-3 py-1.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#4a7c30] sm:w-48">
+                        <option value="">Semua Babak</option>
+                        @foreach ($this->availableRounds as $round)
+                            <option value="{{ $round }}">{{ $round }}</option>
+                        @endforeach
+                    </select>
+                </flux:card>
+            @endif
+        </div>
     </div>
 
-    {{-- Active filter badge --}}
-    @if ($roundFilter !== '')
-        <div class="flex items-center gap-2">
-            <flux:badge color="blue">{{ $roundFilter }}</flux:badge>
-            <flux:button wire:click="$set('roundFilter', '')" size="sm" variant="ghost" icon="x-mark">
-                Hapus filter
-            </flux:button>
+    {{-- Active filter badges --}}
+    @if ($sportFilter || $roundFilter !== '')
+        <div class="flex flex-wrap items-center gap-2">
+            @if ($sportFilter)
+                <flux:badge color="indigo">{{ $sportFilter }}</flux:badge>
+                <flux:button wire:click="$set('sportFilter', '')" size="sm" variant="ghost" icon="x-mark">
+                    Hapus cabang
+                </flux:button>
+            @endif
+            @if ($roundFilter !== '')
+                <flux:badge color="blue">{{ $roundFilter }}</flux:badge>
+                <flux:button wire:click="$set('roundFilter', '')" size="sm" variant="ghost" icon="x-mark">
+                    Hapus babak
+                </flux:button>
+            @endif
         </div>
     @endif
 
@@ -73,10 +95,24 @@
                         <span class="text-2xl leading-none">{{ $medal['label'] }}</span>
 
                         {{-- Avatar --}}
-                        <div class="{{ $medal['size'] }} flex shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 font-bold text-white shadow-md ring-2 {{ $medal['ring'] }} select-none
-                            {{ $pos === 1 ? 'text-sm' : 'text-xs' }}">
-                            {{ strtoupper(substr($standing->team->name, 0, 2)) }}
-                        </div>
+                        @php
+                            $podiumLogoUrl = $standing->team->logo
+                                ? (str_starts_with($standing->team->logo, 'http://') || str_starts_with($standing->team->logo, 'https://')
+                                    ? $standing->team->logo
+                                    : (str_starts_with($standing->team->logo, 'public/')
+                                        ? '/storage/' . str_replace('public/', '', $standing->team->logo)
+                                        : '/storage/' . $standing->team->logo))
+                                : null;
+                        @endphp
+                        @if ($podiumLogoUrl)
+                            <img src="{{ $podiumLogoUrl }}" alt="{{ $standing->team->name }}"
+                                 class="{{ $medal['size'] }} shrink-0 rounded-full object-cover shadow-md ring-2 {{ $medal['ring'] }}" />
+                        @else
+                            <div class="{{ $medal['size'] }} flex shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 font-bold text-white shadow-md ring-2 {{ $medal['ring'] }} select-none
+                                {{ $pos === 1 ? 'text-sm' : 'text-xs' }}">
+                                {{ strtoupper(substr($standing->team->name, 0, 2)) }}
+                            </div>
+                        @endif
 
                         {{-- Name --}}
                         <p class="w-full truncate text-xs font-bold text-[#1e2b1d] dark:text-white sm:text-sm">
@@ -142,9 +178,23 @@
 
                         {{-- Tim --}}
                         <div class="flex min-w-0 items-center gap-2.5">
-                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 text-[10px] font-bold text-white shadow-sm select-none">
-                                {{ strtoupper(substr($standing->team->name, 0, 2)) }}
-                            </div>
+                            @php
+                                $rowLogoUrl = $standing->team->logo
+                                    ? (str_starts_with($standing->team->logo, 'http://') || str_starts_with($standing->team->logo, 'https://')
+                                        ? $standing->team->logo
+                                        : (str_starts_with($standing->team->logo, 'public/')
+                                            ? '/storage/' . str_replace('public/', '', $standing->team->logo)
+                                            : '/storage/' . $standing->team->logo))
+                                    : null;
+                            @endphp
+                            @if ($rowLogoUrl)
+                                <img src="{{ $rowLogoUrl }}" alt="{{ $standing->team->name }}"
+                                     class="h-7 w-7 shrink-0 rounded-lg object-cover shadow-sm" />
+                            @else
+                                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 text-[10px] font-bold text-white shadow-sm select-none">
+                                    {{ strtoupper(substr($standing->team->name, 0, 2)) }}
+                                </div>
+                            @endif
                             <span class="truncate text-sm font-semibold text-[#1e2b1d] dark:text-white">
                                 {{ $standing->team->name }}
                             </span>

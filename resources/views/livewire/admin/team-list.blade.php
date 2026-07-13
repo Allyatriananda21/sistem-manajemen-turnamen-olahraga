@@ -68,9 +68,24 @@
 
                         {{-- Avatar + Nama + Invoice --}}
                         <div class="flex items-start gap-4">
-                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-sm font-bold text-white shadow-md select-none">
-                                {{ strtoupper(substr($team->name, 0, 2)) }}
-                            </div>
+                            @if ($team->logo)
+                                @php
+                                    $logoUrl = str_starts_with($team->logo, 'http://') || str_starts_with($team->logo, 'https://')
+                                        ? $team->logo
+                                        : (str_starts_with($team->logo, 'public/')
+                                            ? '/storage/' . str_replace('public/', '', $team->logo)
+                                            : '/storage/' . $team->logo);
+                                @endphp
+                                <img
+                                    src="{{ $logoUrl }}"
+                                    alt="Logo {{ $team->name }}"
+                                    class="h-12 w-12 rounded-xl object-cover shadow-md border border-slate-200 dark:border-slate-700 shrink-0"
+                                />
+                            @else
+                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-sm font-bold text-white shadow-md select-none">
+                                    {{ strtoupper(substr($team->name, 0, 2)) }}
+                                </div>
+                            @endif
                             <div class="min-w-0 flex-1">
                                 <p class="truncate text-base font-bold text-[#1e2b1d] dark:text-white">{{ $team->name }}</p>
                                 @if ($team->invoice_number)

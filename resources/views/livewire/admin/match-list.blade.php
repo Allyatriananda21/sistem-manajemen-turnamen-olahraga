@@ -13,13 +13,21 @@
 
     {{-- Filters --}}
     <flux:card class="secondary-card bg-[#E4FD97] border-[#c8e87d] py-3">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
             <flux:input
                 wire:model.live.debounce.300ms="search"
                 placeholder="Cari nama tim..."
                 icon="magnifying-glass"
                 class="sm:max-w-xs"
             />
+            @if ($availableSports->isNotEmpty())
+                <select wire:model.live="sportFilter" class="sm:w-48 w-full rounded-lg border border-[#c8e87d] bg-[#E4FD97] dark:bg-[#2a3d1a] px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#4a7c30]">
+                    <option value="">Semua Cabang Olahraga</option>
+                    @foreach ($availableSports as $sport)
+                        <option value="{{ $sport }}">{{ $sport }}</option>
+                    @endforeach
+                </select>
+            @endif
             <select wire:model.live="statusFilter" class="sm:w-44 w-full rounded-lg border border-[#c8e87d] bg-[#E4FD97] dark:bg-[#2a3d1a] px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#4a7c30]">
                 <option value="all">Semua Status</option>
                 <option value="scheduled">Scheduled</option>
@@ -27,7 +35,7 @@
                 <option value="done">Done</option>
                 <option value="cancelled">Cancelled</option>
             </select>
-            @if ($search || $statusFilter !== 'all')
+            @if ($search || $statusFilter !== 'all' || $sportFilter)
                 <flux:badge color="blue" class="self-start sm:self-auto">
                     {{ $matches->total() }} hasil
                 </flux:badge>
@@ -62,9 +70,23 @@
                 <div class="flex flex-1 items-center gap-4 px-5 py-4">
 
                     @if ($isBye)
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
-                            {{ strtoupper(substr($match->team1->name, 0, 2)) }}
-                        </div>
+                        @php
+                            $byeLogoUrl = $match->team1->logo
+                                ? (str_starts_with($match->team1->logo, 'http://') || str_starts_with($match->team1->logo, 'https://')
+                                    ? $match->team1->logo
+                                    : (str_starts_with($match->team1->logo, 'public/')
+                                        ? '/storage/' . str_replace('public/', '', $match->team1->logo)
+                                        : '/storage/' . $match->team1->logo))
+                                : null;
+                        @endphp
+                        @if ($byeLogoUrl)
+                            <img src="{{ $byeLogoUrl }}" alt="{{ $match->team1->name }}"
+                                 class="h-10 w-10 shrink-0 rounded-xl object-cover shadow-sm" />
+                        @else
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
+                                {{ strtoupper(substr($match->team1->name, 0, 2)) }}
+                            </div>
+                        @endif
                         <div>
                             <p class="font-bold text-[#1e2b1d] dark:text-white">{{ $match->team1->name }}</p>
                             <flux:badge color="amber" size="sm" class="mt-1">BYE</flux:badge>
@@ -72,9 +94,23 @@
                     @else
                         {{-- Team 1 --}}
                         <div class="flex min-w-0 flex-1 items-center gap-3">
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
-                                {{ strtoupper(substr($match->team1->name, 0, 2)) }}
-                            </div>
+                            @php
+                                $t1LogoUrl = $match->team1->logo
+                                    ? (str_starts_with($match->team1->logo, 'http://') || str_starts_with($match->team1->logo, 'https://')
+                                        ? $match->team1->logo
+                                        : (str_starts_with($match->team1->logo, 'public/')
+                                            ? '/storage/' . str_replace('public/', '', $match->team1->logo)
+                                            : '/storage/' . $match->team1->logo))
+                                    : null;
+                            @endphp
+                            @if ($t1LogoUrl)
+                                <img src="{{ $t1LogoUrl }}" alt="{{ $match->team1->name }}"
+                                     class="h-10 w-10 shrink-0 rounded-xl object-cover shadow-sm" />
+                            @else
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
+                                    {{ strtoupper(substr($match->team1->name, 0, 2)) }}
+                                </div>
+                            @endif
                             <span class="truncate font-semibold text-[#1e2b1d] dark:text-white">
                                 {{ $match->team1->name }}
                             </span>
@@ -107,9 +143,23 @@
                             <span class="truncate text-right font-semibold text-[#1e2b1d] dark:text-white">
                                 {{ $match->team2->name }}
                             </span>
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 text-xs font-bold text-white shadow-sm select-none">
-                                {{ strtoupper(substr($match->team2->name, 0, 2)) }}
-                            </div>
+                            @php
+                                $t2LogoUrl = $match->team2->logo
+                                    ? (str_starts_with($match->team2->logo, 'http://') || str_starts_with($match->team2->logo, 'https://')
+                                        ? $match->team2->logo
+                                        : (str_starts_with($match->team2->logo, 'public/')
+                                            ? '/storage/' . str_replace('public/', '', $match->team2->logo)
+                                            : '/storage/' . $match->team2->logo))
+                                    : null;
+                            @endphp
+                            @if ($t2LogoUrl)
+                                <img src="{{ $t2LogoUrl }}" alt="{{ $match->team2->name }}"
+                                     class="h-10 w-10 shrink-0 rounded-xl object-cover shadow-sm" />
+                            @else
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 text-xs font-bold text-white shadow-sm select-none">
+                                    {{ strtoupper(substr($match->team2->name, 0, 2)) }}
+                                </div>
+                            @endif
                         </div>
                     @endif
 

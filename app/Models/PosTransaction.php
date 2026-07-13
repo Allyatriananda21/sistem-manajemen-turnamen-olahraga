@@ -14,6 +14,7 @@ class PosTransaction extends Model
         'total_amount',
         'payment_method',
         'cashier_name',
+        'notes',
     ];
 
     protected $casts = [

@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\GameMatch;
 use App\Models\Standing;
+use App\Models\TournamentTeam;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -19,8 +20,28 @@ class StandingsTable extends Component
      */
     public string $roundFilter = '';
 
+    /** Filter cabang olahraga. Kosong = semua. */
+    public string $sportFilter = '';
+
     /**
-     * Distinct round values found in finished matches.
+     * Available sport types from all teams that have standings.
+     *
+     * @return Collection<int, string>
+     */
+    #[Computed]
+    public function availableSports(): Collection
+    {
+        return TournamentTeam::whereIn(
+            'id',
+            Standing::select('team_id')
+        )
+            ->distinct()
+            ->orderBy('sport_type')
+            ->pluck('sport_type');
+    }
+
+    /**
+     * Distinct round values found in finished matches, filtered by sport.
      * Used to populate the filter dropdown.
      *
      * @return Collection<int, string>
@@ -31,6 +52,13 @@ class StandingsTable extends Component
         return GameMatch::where('status', 'done')
             ->whereColumn('team1_id', '!=', 'team2_id')
             ->whereNotNull('round')
+            ->when(
+                $this->sportFilter,
+                fn ($q) => $q->whereHas(
+                    'team1',
+                    fn ($tq) => $tq->where('sport_type', $this->sportFilter),
+                ),
+            )
             ->distinct()
             ->orderBy('round')
             ->pluck('round');
@@ -52,6 +80,13 @@ class StandingsTable extends Component
             ->orderByDesc('goal_diff')
             ->orderBy('win', 'desc');
 
+        if ($this->sportFilter !== '') {
+            // Restrict to teams with matching sport_type
+            $sportTeamIds = TournamentTeam::where('sport_type', $this->sportFilter)
+                ->pluck('id');
+            $query->whereIn('team_id', $sportTeamIds);
+        }
+
         if ($this->roundFilter !== '') {
             // Restrict to teams that played in the selected round
             $teamIds = GameMatch::where('status', 'done')
@@ -70,8 +105,13 @@ class StandingsTable extends Component
 
     public function updatedRoundFilter(): void
     {
-        // Clear computed cache so standings re-query with the new filter
-        unset($this->standings);
+        unset($this->standings, $this->availableRounds);
+    }
+
+    public function updatedSportFilter(): void
+    {
+        $this->roundFilter = '';
+        unset($this->standings, $this->availableRounds);
     }
 
     /**

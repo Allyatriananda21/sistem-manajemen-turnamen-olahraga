@@ -49,6 +49,18 @@ class PosCashier extends Component
     public string $teamPaymentAmount = '';
 
     // -----------------------------------------------------------------------
+    // Denda Tim properties
+    // -----------------------------------------------------------------------
+
+    public string $dendaSearch = '';
+
+    public ?int $selectedDendaTeamId = null;
+
+    public string $dendaAmount = '';
+
+    public string $dendaNotes = '';
+
+    // -----------------------------------------------------------------------
     // Computed properties
     // -----------------------------------------------------------------------
 
@@ -84,7 +96,7 @@ class PosCashier extends Component
     #[Computed]
     public function change(): float
     {
-        $paid = (float) ($this->amountPaid ?: 0);
+        $paid = (float) str_replace(['.', ',', ' '], '', $this->amountPaid ?: '0');
 
         return $paid - $this->total;
     }
@@ -118,6 +130,36 @@ class PosCashier extends Component
         }
 
         return TournamentTeam::find($this->selectedTeamId);
+    }
+
+    /**
+     * Approved teams for denda tab, filtered by search.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, TournamentTeam>
+     */
+    #[Computed]
+    public function dendaTeams()
+    {
+        return TournamentTeam::where('status', 'approved')
+            ->when(
+                $this->dendaSearch,
+                fn ($q) => $q->where('name', 'like', "%{$this->dendaSearch}%")
+            )
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * The currently selected team for denda payment.
+     */
+    #[Computed]
+    public function selectedDendaTeam(): ?TournamentTeam
+    {
+        if (! $this->selectedDendaTeamId) {
+            return null;
+        }
+
+        return TournamentTeam::find($this->selectedDendaTeamId);
     }
 
     // -----------------------------------------------------------------------
@@ -242,7 +284,7 @@ class PosCashier extends Component
             return;
         }
 
-        $paid = (float) ($this->amountPaid ?: 0);
+        $paid = (float) str_replace(['.', ',', ' '], '', $this->amountPaid ?: '0');
 
         if ($paid < $this->total) {
             $this->addError('checkout', 'Uang yang dibayarkan kurang dari total belanja.');
@@ -371,6 +413,8 @@ class PosCashier extends Component
      */
     public function processTeamPayment(): void
     {
+        $this->teamPaymentAmount = str_replace(['.', ',', ' '], '', $this->teamPaymentAmount);
+
         $validated = $this->validate([
             'teamPaymentAmount' => ['required', 'numeric', 'gt:0'],
         ], [
@@ -380,6 +424,10 @@ class PosCashier extends Component
         ]);
 
         $amount = (float) $validated['teamPaymentAmount'];
+        if ($amount < 1000) {
+            $amount *= 1000;
+        }
+
         $teamIdNow = $this->selectedTeamId;
 
         try {
@@ -411,6 +459,88 @@ class PosCashier extends Component
 
         } catch (\RuntimeException $e) {
             $this->addError('teamPaymentAmount', $e->getMessage());
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Denda Tim actions
+    // -----------------------------------------------------------------------
+
+    /**
+     * Select a team to process their fine payment.
+     */
+    public function selectDendaTeam(int $teamId): void
+    {
+        $this->selectedDendaTeamId = $teamId;
+        $this->dendaAmount = '';
+        $this->dendaNotes = '';
+        $this->resetValidation(['dendaAmount', 'dendaNotes']);
+        unset($this->selectedDendaTeam);
+    }
+
+    /**
+     * Deselect the current denda team.
+     */
+    public function deselectDendaTeam(): void
+    {
+        $this->selectedDendaTeamId = null;
+        $this->dendaAmount = '';
+        $this->dendaNotes = '';
+        $this->resetValidation(['dendaAmount', 'dendaNotes']);
+        unset($this->selectedDendaTeam);
+    }
+
+    /**
+     * Process fine payment for the selected team.
+     */
+    public function processDenda(): void
+    {
+        $this->dendaAmount = str_replace(['.', ',', ' '], '', $this->dendaAmount);
+
+        $validated = $this->validate([
+            'dendaAmount' => ['required', 'numeric', 'gt:0'],
+            'dendaNotes' => ['required', 'string', 'max:255'],
+        ], [
+            'dendaAmount.required' => 'Nominal denda wajib diisi.',
+            'dendaAmount.numeric' => 'Nominal harus berupa angka.',
+            'dendaAmount.gt' => 'Nominal harus lebih dari 0.',
+            'dendaNotes.required' => 'Keterangan denda wajib diisi.',
+            'dendaNotes.max' => 'Keterangan maksimal 255 karakter.',
+        ]);
+
+        $amount = (float) $validated['dendaAmount'];
+        if ($amount < 1000) {
+            $amount *= 1000;
+        }
+
+        $teamIdNow = $this->selectedDendaTeamId;
+        $notes = trim($validated['dendaNotes']);
+
+        try {
+            DB::transaction(function () use ($teamIdNow, $amount, $notes): void {
+                $team = TournamentTeam::findOrFail($teamIdNow);
+
+                PosTransaction::create([
+                    'transaction_type' => 'denda',
+                    'team_id' => $team->id,
+                    'total_amount' => $amount,
+                    'payment_method' => 'cash',
+                    'cashier_name' => Auth::user()->name,
+                    'notes' => $notes,
+                ]);
+            });
+
+            // Refresh computed caches after mutation
+            unset($this->selectedDendaTeam);
+
+            $this->selectedDendaTeamId = null;
+            $this->dendaAmount = '';
+            $this->dendaNotes = '';
+
+            Flux::toast(variant: 'success', text: 'Pembayaran denda tim berhasil dicatat.');
+
+        } catch (\RuntimeException $e) {
+            $this->addError('dendaAmount', $e->getMessage());
         }
     }
 

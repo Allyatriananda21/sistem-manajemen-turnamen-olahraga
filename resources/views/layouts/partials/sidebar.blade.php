@@ -218,6 +218,7 @@
             </a>
             @endif
 
+
             {{-- Galeri --}}
             @if(auth()->user()->isAdmin())
             <a href="{{ route('admin.gallery') }}"

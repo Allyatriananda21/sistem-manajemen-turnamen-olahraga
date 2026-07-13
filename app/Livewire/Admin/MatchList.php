@@ -3,7 +3,9 @@
 namespace App\Livewire\Admin;
 
 use App\Models\GameMatch;
+use App\Models\TournamentTeam;
 use Flux\Flux;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -19,6 +21,9 @@ class MatchList extends Component
 
     /** @var string 'all'|'scheduled'|'ongoing'|'done'|'cancelled' */
     public string $statusFilter = 'all';
+
+    /** Filter cabang olahraga. Kosong = semua. */
+    public string $sportFilter = '';
 
     // Edit modal state
     public bool $showEditModal = false;
@@ -39,6 +44,27 @@ class MatchList extends Component
     public function updatedStatusFilter(): void
     {
         $this->resetPage();
+    }
+
+    public function updatedSportFilter(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Available sport types from all teams involved in matches.
+     *
+     * @return Collection<int, string>
+     */
+    public function getAvailableSportsProperty(): Collection
+    {
+        return TournamentTeam::whereIn(
+            'id',
+            GameMatch::select('team1_id')->union(GameMatch::select('team2_id'))
+        )
+            ->distinct()
+            ->orderBy('sport_type')
+            ->pluck('sport_type');
     }
 
     /**
@@ -93,23 +119,30 @@ class MatchList extends Component
         $matches = GameMatch::with(['team1', 'team2'])
             ->when(
                 $this->search,
-                fn ($query) => $query->whereHas(
-                    'team1',
-                    fn ($q) => $q->where('name', 'like', "%{$this->search}%")
-                )->orWhereHas(
-                    'team2',
-                    fn ($q) => $q->where('name', 'like', "%{$this->search}%")
-                )
+                fn ($query) => $query->where(function ($q) {
+                    $q->whereHas('team1', fn ($tq) => $tq->where('name', 'like', "%{$this->search}%"))
+                        ->orWhereHas('team2', fn ($tq) => $tq->where('name', 'like', "%{$this->search}%"));
+                })
             )
             ->when(
                 $this->statusFilter !== 'all',
                 fn ($query) => $query->where('status', $this->statusFilter)
             )
+            ->when(
+                $this->sportFilter,
+                fn ($query) => $query->whereHas(
+                    'team1',
+                    fn ($tq) => $tq->where('sport_type', $this->sportFilter),
+                )
+            )
             ->orderByRaw("FIELD(status, 'ongoing', 'scheduled', 'done', 'cancelled')")
             ->orderBy('match_date')
             ->paginate(15);
 
-        return view('livewire.admin.match-list', compact('matches'));
+        return view('livewire.admin.match-list', [
+            'matches' => $matches,
+            'availableSports' => $this->getAvailableSportsProperty(),
+        ]);
     }
 
     private function resetEditState(): void

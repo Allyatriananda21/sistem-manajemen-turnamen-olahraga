@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\GameMatch;
+use App\Models\TournamentTeam;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -19,17 +20,39 @@ class BracketView extends Component
      * @var array<string, int>
      */
     private const ROUND_ORDER = [
-        '32 Besar'       => 10,
-        '16 Besar'       => 20,
+        '32 Besar' => 10,
+        '16 Besar' => 20,
         'Perempat Final' => 30,
-        'Semifinal'      => 40,
-        'Final'          => 50,
+        'Semifinal' => 40,
+        'Final' => 50,
     ];
 
     // Modal state
     public bool $showMatchModal = false;
 
     public ?int $selectedMatchId = null;
+
+    /** Filter cabang olahraga untuk bracket. Kosong = semua. */
+    public string $sportFilter = '';
+
+    /**
+     * Available sport types from matches that have a round (knockout).
+     *
+     * @return Collection<int, string>
+     */
+    #[Computed]
+    public function availableSports(): Collection
+    {
+        return TournamentTeam::whereIn(
+            'id',
+            GameMatch::whereNotNull('round')
+                ->where('round', 'not like', 'Matchday%')
+                ->select('team1_id')
+        )
+            ->distinct()
+            ->orderBy('sport_type')
+            ->pluck('sport_type');
+    }
 
     /**
      * Knockout matches grouped and sorted by round.
@@ -39,9 +62,16 @@ class BracketView extends Component
     #[Computed]
     public function rounds(): Collection
     {
-        $matches = GameMatch::with(['team1:id,name', 'team2:id,name', 'winner:id,name'])
+        $matches = GameMatch::with(['team1:id,name,sport_type', 'team2:id,name,sport_type', 'winner:id,name'])
             ->whereNotNull('round')
             ->where('round', 'not like', 'Matchday%')
+            ->when(
+                $this->sportFilter,
+                fn ($q) => $q->whereHas(
+                    'team1',
+                    fn ($tq) => $tq->where('sport_type', $this->sportFilter),
+                ),
+            )
             ->orderBy('id')
             ->get();
 
@@ -49,7 +79,7 @@ class BracketView extends Component
             ->groupBy('round')
             ->sortBy(fn ($_, $round) => self::ROUND_ORDER[$round] ?? 99)
             ->map(fn ($roundMatches, $round) => [
-                'round'   => $round,
+                'round' => $round,
                 'matches' => $roundMatches,
             ])
             ->values();
@@ -74,7 +104,7 @@ class BracketView extends Component
     public function openMatch(int $matchId): void
     {
         $this->selectedMatchId = $matchId;
-        $this->showMatchModal  = true;
+        $this->showMatchModal = true;
         unset($this->selectedMatch);
     }
 
@@ -83,7 +113,7 @@ class BracketView extends Component
      */
     public function closeModal(): void
     {
-        $this->showMatchModal  = false;
+        $this->showMatchModal = false;
         $this->selectedMatchId = null;
         unset($this->selectedMatch);
     }

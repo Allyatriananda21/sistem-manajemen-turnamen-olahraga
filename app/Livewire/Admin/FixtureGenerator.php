@@ -19,8 +19,25 @@ class FixtureGenerator extends Component
     /** @var string 'round-robin'|'knockout' */
     public string $format = 'round-robin';
 
+    /** Filter cabang olahraga yang akan digenerate. Kosong = semua (tidak disarankan). */
+    public string $sportFilter = '';
+
     /**
-     * Approved teams available for fixture generation.
+     * Daftar cabang olahraga unik dari tim yang sudah disetujui.
+     *
+     * @return Collection<int, string>
+     */
+    #[Computed]
+    public function availableSports(): Collection
+    {
+        return TournamentTeam::where('status', 'approved')
+            ->distinct()
+            ->orderBy('sport_type')
+            ->pluck('sport_type');
+    }
+
+    /**
+     * Approved teams available for fixture generation, filtered by sport.
      *
      * @return Collection<int, TournamentTeam>
      */
@@ -28,17 +45,29 @@ class FixtureGenerator extends Component
     public function approvedTeams(): Collection
     {
         return TournamentTeam::where('status', 'approved')
+            ->when(
+                $this->sportFilter,
+                fn ($q) => $q->where('sport_type', $this->sportFilter),
+            )
             ->orderBy('name')
             ->get();
     }
 
     /**
-     * Existing scheduled fixtures count to show current state.
+     * Existing scheduled fixtures count to show current state, filtered by sport.
      */
     #[Computed]
     public function existingFixturesCount(): int
     {
-        return GameMatch::where('status', 'scheduled')->count();
+        return GameMatch::where('status', 'scheduled')
+            ->when(
+                $this->sportFilter,
+                fn ($q) => $q->whereHas(
+                    'team1',
+                    fn ($tq) => $tq->where('sport_type', $this->sportFilter),
+                ),
+            )
+            ->count();
     }
 
     /**
@@ -60,6 +89,15 @@ class FixtureGenerator extends Component
             return;
         }
 
+        if (! $this->sportFilter) {
+            $this->addError(
+                'generate',
+                'Pilih cabang olahraga terlebih dahulu agar tim yang berbeda cabang tidak saling bertanding.'
+            );
+
+            return;
+        }
+
         $teamIds = $teams->pluck('id')->toArray();
 
         $fixtures = match ($this->format) {
@@ -74,13 +112,13 @@ class FixtureGenerator extends Component
         });
 
         // Clear computed cache so counts refresh after generate
-        unset($this->approvedTeams, $this->existingFixturesCount);
+        unset($this->approvedTeams, $this->existingFixturesCount, $this->availableSports);
 
         $total = count($fixtures);
         $formatLabel = $this->format === 'knockout' ? 'Knockout (Babak 1)' : 'Round-Robin';
         Flux::toast(
             variant: 'success',
-            text: "{$total} pertandingan {$formatLabel} berhasil digenerate."
+            text: "{$total} pertandingan {$formatLabel} ({$this->sportFilter}) berhasil digenerate."
         );
     }
 

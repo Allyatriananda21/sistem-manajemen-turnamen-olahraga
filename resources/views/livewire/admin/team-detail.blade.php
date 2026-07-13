@@ -17,8 +17,15 @@
         {{-- Logo --}}
         <div class="shrink-0">
             @if ($team->logo)
+                @php
+                    $logoUrl = str_starts_with($team->logo, 'http://') || str_starts_with($team->logo, 'https://')
+                        ? $team->logo
+                        : (str_starts_with($team->logo, 'public/')
+                            ? '/storage/' . str_replace('public/', '', $team->logo)
+                            : '/storage/' . $team->logo);
+                @endphp
                 <img
-                    src="{{ Storage::url($team->logo) }}"
+                    src="{{ $logoUrl }}"
                     alt="Logo {{ $team->name }}"
                     class="h-24 w-24 rounded-2xl object-cover shadow-md border border-slate-200 dark:border-slate-700"
                 />

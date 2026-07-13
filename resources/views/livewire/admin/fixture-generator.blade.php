@@ -14,6 +14,20 @@
                 <flux:heading size="lg">Pengaturan</flux:heading>
                 <flux:separator />
 
+                {{-- Cabang Olahraga (WAJIB dipilih dulu) --}}
+                <flux:field>
+                    <flux:label>Cabang Olahraga <span class="text-red-500">*</span></flux:label>
+                    <select wire:model.live="sportFilter" class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">-- Pilih Cabang Olahraga --</option>
+                        @foreach ($this->availableSports as $sport)
+                            <option value="{{ $sport }}">{{ $sport }}</option>
+                        @endforeach
+                    </select>
+                    <flux:description>
+                        Jadwal hanya dibuat untuk satu cabang olahraga agar tim berbeda cabang tidak saling bertanding.
+                    </flux:description>
+                </flux:field>
+
                 {{-- Format dropdown --}}
                 <flux:field>
                     <flux:label>Format Kompetisi</flux:label>
@@ -81,7 +95,7 @@
                     variant="primary"
                     icon="bolt"
                     class="w-full"
-                    :disabled="$this->approvedTeams->count() < 2"
+                    :disabled="$this->approvedTeams->count() < 2 || ! $sportFilter"
                 >
                     <span wire:loading.remove wire:target="generate">Generate Jadwal</span>
                     <span wire:loading wire:target="generate">Memproses...</span>
@@ -92,10 +106,23 @@
         {{-- Right: Approved Teams Preview --}}
         <div class="lg:col-span-2">
             <flux:card class="secondary-card space-y-4 bg-[#E4FD97] border-[#c8e87d]">
-                <flux:heading size="lg">Tim yang Akan Dijadwalkan</flux:heading>
+                <flux:heading size="lg">
+                    Tim yang Akan Dijadwalkan
+                    @if ($sportFilter)
+                        <flux:badge color="indigo" size="sm" class="ml-2">{{ $sportFilter }}</flux:badge>
+                    @endif
+                </flux:heading>
                 <flux:separator />
 
-                @if ($this->approvedTeams->isEmpty())
+                @if (! $sportFilter)
+                    <div class="flex flex-col items-center gap-3 py-10 text-center">
+                        <svg class="h-10 w-10 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <flux:text class="text-slate-500 font-medium">Pilih cabang olahraga terlebih dahulu</flux:text>
+                        <flux:text class="text-slate-400 text-sm">Agar tim basket tidak bertanding melawan tim sepak bola.</flux:text>
+                    </div>
+                @elseif ($this->approvedTeams->isEmpty())
                     <div class="flex flex-col items-center gap-3 py-10 text-center">
                         <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -110,9 +137,23 @@
                         @foreach ($this->approvedTeams as $team)
                             <div wire:key="team-{{ $team->id }}"
                                  class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-slate-700 dark:bg-slate-800/30">
-                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
-                                    {{ strtoupper(substr($team->name, 0, 2)) }}
-                                </div>
+                                @php
+                                    $teamLogoUrl = $team->logo
+                                        ? (str_starts_with($team->logo, 'http://') || str_starts_with($team->logo, 'https://')
+                                            ? $team->logo
+                                            : (str_starts_with($team->logo, 'public/')
+                                                ? '/storage/' . str_replace('public/', '', $team->logo)
+                                                : '/storage/' . $team->logo))
+                                        : null;
+                                @endphp
+                                @if ($teamLogoUrl)
+                                    <img src="{{ $teamLogoUrl }}" alt="{{ $team->name }}"
+                                         class="h-9 w-9 shrink-0 rounded-full object-cover shadow-sm" />
+                                @else
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm select-none">
+                                        {{ strtoupper(substr($team->name, 0, 2)) }}
+                                    </div>
+                                @endif
                                 <div class="min-w-0 flex-1">
                                     <p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">{{ $team->name }}</p>
                                     <p class="truncate text-xs text-slate-400">{{ $team->sport_type }}</p>

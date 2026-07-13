@@ -41,6 +41,16 @@
                     </span>
                 @endif
             </button>
+            <button
+                @click="tab = 'denda'"
+                :class="tab === 'denda' ? 'bg-white dark:bg-slate-900 shadow-sm text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+                class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all"
+            >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Denda Tim
+            </button>
         </div>
 
         {{-- ================================================================
@@ -212,9 +222,7 @@
                     <flux:label>Uang Dibayar (Rp)</flux:label>
                     <flux:input
                         wire:model.live="amountPaid"
-                        type="number"
-                        min="0"
-                        step="1000"
+                        type="text"
                         placeholder="0"
                         inputmode="numeric"
                         :disabled="empty($cart)"
@@ -368,9 +376,7 @@
                                 <flux:label>Nominal Pembayaran (Rp)</flux:label>
                                 <flux:input
                                     wire:model.live="teamPaymentAmount"
-                                    type="number"
-                                    min="1"
-                                    step="10000"
+                                    type="text"
                                     placeholder="cth. 150000"
                                     inputmode="numeric"
                                     autofocus
@@ -407,6 +413,147 @@
 
             </div>
         </div>{{-- end tab tagihan --}}
+
+        {{-- ================================================================
+             TAB: DENDA TIM
+             ================================================================ --}}
+        <div x-show="tab === 'denda'" class="mt-4">
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+                {{-- LEFT: Approved teams list --}}
+                <div class="space-y-4">
+                    <flux:input
+                        wire:model.live.debounce.250ms="dendaSearch"
+                        placeholder="Cari nama tim..."
+                        icon="magnifying-glass"
+                    />
+
+                    @if ($this->dendaTeams->isEmpty())
+                        <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 py-16 dark:border-slate-700">
+                            <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <flux:text class="text-center text-slate-400">
+                                Tidak ada tim yang cocok.
+                            </flux:text>
+                        </div>
+                    @else
+                        <div class="space-y-2">
+                            @foreach ($this->dendaTeams as $team)
+                                <button
+                                    wire:click="selectDendaTeam({{ $team->id }})"
+                                    wire:key="team-denda-{{ $team->id }}"
+                                    class="w-full rounded-xl border p-4 text-left transition-all duration-200 hover:border-red-300 hover:bg-red-50/50 dark:hover:border-red-700 dark:hover:bg-red-900/10
+                                        {{ $selectedDendaTeamId === $team->id
+                                            ? 'border-red-400 bg-red-50 dark:border-red-600 dark:bg-red-900/20'
+                                            : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900' }}"
+                                >
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-red-400 to-rose-600 text-xs font-bold text-white shadow-sm select-none">
+                                                {{ strtoupper(substr($team->name, 0, 2)) }}
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ $team->name }}</p>
+                                                @if ($team->invoice_number)
+                                                    <p class="font-mono text-xs text-slate-400">{{ $team->invoice_number }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <flux:badge color="red" size="sm">Denda</flux:badge>
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                {{-- RIGHT: Denda payment form for selected team --}}
+                <div>
+                    @if ($this->selectedDendaTeam)
+                        <flux:card class="secondary-card space-y-5 bg-[#E4FD97] border-[#c8e87d]">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <flux:heading size="lg">{{ $this->selectedDendaTeam->name }}</flux:heading>
+                                    @if ($this->selectedDendaTeam->invoice_number)
+                                        <flux:text class="font-mono text-xs text-slate-400">
+                                            {{ $this->selectedDendaTeam->invoice_number }}
+                                        </flux:text>
+                                    @endif
+                                    <div class="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
+                                        <span>{{ $this->selectedDendaTeam->sport_type }}</span>
+                                        @if ($this->selectedDendaTeam->contact_person)
+                                            <span>&middot; {{ $this->selectedDendaTeam->contact_person }}</span>
+                                        @endif
+                                        @if ($this->selectedDendaTeam->phone)
+                                            <span>&middot; {{ $this->selectedDendaTeam->phone }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <button wire:click="deselectDendaTeam" class="text-slate-300 hover:text-slate-500 transition-colors">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <flux:separator />
+
+                            <flux:field>
+                                <flux:label>Keterangan Denda</flux:label>
+                                <flux:input
+                                    wire:model.live="dendaNotes"
+                                    type="text"
+                                    placeholder="cth. Kartu merah, pelanggaran keras"
+                                    maxlength="255"
+                                    autofocus
+                                />
+                                <flux:description>
+                                    Alasan atau jenis pelanggaran yang menyebabkan denda.
+                                </flux:description>
+                                <flux:error name="dendaNotes" />
+                            </flux:field>
+
+                            <flux:field>
+                                <flux:label>Nominal Denda (Rp)</flux:label>
+                                <flux:input
+                                    wire:model.live="dendaAmount"
+                                    type="text"
+                                    placeholder="cth. 50000"
+                                    inputmode="numeric"
+                                />
+                                <flux:description>
+                                    Nominal denda/pelanggaran tim yang harus dibayarkan.
+                                </flux:description>
+                                <flux:error name="dendaAmount" />
+                            </flux:field>
+
+                            <flux:button
+                                wire:click="processDenda"
+                                wire:loading.attr="disabled"
+                                variant="primary"
+                                icon="exclamation-circle"
+                                class="w-full"
+                                :disabled="! $dendaAmount || ! $dendaNotes"
+                            >
+                                <span wire:loading.remove wire:target="processDenda">Bayar Denda</span>
+                                <span wire:loading wire:target="processDenda">Menyimpan...</span>
+                            </flux:button>
+                        </flux:card>
+                    @else
+                        <div class="flex h-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 p-12 dark:border-slate-700">
+                            <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                            </svg>
+                            <flux:text class="text-center text-sm text-slate-400">
+                                Pilih tim di sebelah kiri<br>untuk memproses denda.
+                            </flux:text>
+                        </div>
+                    @endif
+                </div>
+
+            </div>
+        </div>{{-- end tab denda --}}
 
     </div>{{-- end x-data tab --}}
 
