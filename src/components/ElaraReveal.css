@@ -1,0 +1,100 @@
+.elara-reveal {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: transparent;
+  /* Reset default margin if any */
+  margin: 0;
+  padding: 0;
+}
+
+.elara-reveal .hero {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.elara-reveal .hero-images {
+  display: flex;
+  gap: 2vw;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  margin-top: 10vh;
+}
+
+.elara-reveal .img {
+  width: 15vw;
+  height: 25vw;
+  overflow: hidden;
+  transform: translateY(100vh);
+  opacity: 0;
+  border-radius: 12px;
+}
+
+.elara-reveal .hero-img {
+  width: 20vw;
+  height: 30vw;
+}
+
+.elara-reveal .img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.elara-reveal .hero-header {
+  position: absolute;
+  z-index: 1;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%;
+}
+
+.elara-reveal .hero-header h1 {
+  font-size: 6vw;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: white;
+  margin: 0;
+  font-family: var(--font-display, sans-serif);
+}
+
+.elara-reveal .hero-header h1 .word {
+  transform: translateY(100%);
+  display: inline-block; /* Essential for translate to work */
+}
+
+/* Ensure the words mask container (if GSAP creates one) has overflow hidden */
+.elara-reveal .hero-header h1 div {
+  overflow: hidden;
+  display: inline-block;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .elara-reveal .hero-header h1 {
+    font-size: 14vw;
+    line-height: 1.1;
+  }
+
+  /* Hide the peripheral images on mobile to avoid extreme clutter and tiny images */
+  .elara-reveal .img:not(.hero-img) {
+    display: none;
+  }
+
+  /* Make the central hero image prominent on mobile screens */
+  .elara-reveal .hero-img {
+    width: 60vw;
+    height: 90vw;
+  }
+}

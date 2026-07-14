@@ -1,0 +1,6 @@
+{
+  "name": "TrophyHub",
+  "description": "Landing page untuk Sistem Manajemen Turnamen TrophyHub built with React, Vite, and Tailwind CSS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
