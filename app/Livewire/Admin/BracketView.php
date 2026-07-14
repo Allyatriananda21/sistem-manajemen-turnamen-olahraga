@@ -62,7 +62,7 @@ class BracketView extends Component
     #[Computed]
     public function rounds(): Collection
     {
-        $matches = GameMatch::with(['team1:id,name,sport_type', 'team2:id,name,sport_type', 'winner:id,name'])
+        $matches = GameMatch::with(['team1:id,name,sport_type,logo', 'team2:id,name,sport_type,logo', 'winner:id,name'])
             ->whereNotNull('round')
             ->where('round', 'not like', 'Matchday%')
             ->when(

@@ -278,9 +278,16 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 (function () {
+    function loadChartJs(callback) {
+        if (window.Chart) { callback(); return; }
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js';
+        s.onload = callback;
+        document.head.appendChild(s);
+    }
+
     const chartData = @json($this->revenueChartData);
     const filterTipe = @json($filterTipe);
 
@@ -294,28 +301,11 @@
 
     function buildDatasets(data, filter) {
         const all = [
-            {
-                label: 'Registrasi',
-                key: 'registrasi',
-                bg: 'rgba(99, 102, 241, 0.7)',
-                border: 'rgba(99, 102, 241, 1)',
-            },
-            {
-                label: 'Retail',
-                key: 'retail',
-                bg: 'rgba(20, 184, 166, 0.7)',
-                border: 'rgba(20, 184, 166, 1)',
-            },
-            {
-                label: 'Denda',
-                key: 'denda',
-                bg: 'rgba(245, 158, 11, 0.7)',
-                border: 'rgba(245, 158, 11, 1)',
-            },
+            { label: 'Registrasi', key: 'registrasi', bg: 'rgba(99, 102, 241, 0.7)',  border: 'rgba(99, 102, 241, 1)' },
+            { label: 'Retail',     key: 'retail',     bg: 'rgba(20, 184, 166, 0.7)',  border: 'rgba(20, 184, 166, 1)' },
+            { label: 'Denda',      key: 'denda',      bg: 'rgba(245, 158, 11, 0.7)',  border: 'rgba(245, 158, 11, 1)' },
         ];
-
         const active = filter ? all.filter(d => d.key === filter) : all;
-
         return active.map(d => ({
             label: d.label,
             data: data.datasets[d.key] || [],
@@ -327,59 +317,51 @@
     }
 
     function initChart() {
-        const canvas = document.getElementById('reportRevenueChart');
-        if (! canvas) return;
+        loadChartJs(function () {
+            const canvas = document.getElementById('reportRevenueChart');
+            if (! canvas) return;
 
-        if (canvas._chartInstance) {
-            canvas._chartInstance.destroy();
-        }
+            if (canvas._chartInstance) {
+                canvas._chartInstance.destroy();
+            }
 
-        const isDark = document.documentElement.classList.contains('dark');
-        const gridColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-        const labelColor = isDark ? '#94a3b8' : '#64748b';
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+            const labelColor = isDark ? '#94a3b8' : '#64748b';
 
-        const chart = new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels: chartData.labels,
-                datasets: buildDatasets(chartData, filterTipe),
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: {
-                        labels: { color: labelColor, font: { size: 12 } },
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (ctx) {
-                                return ' ' + ctx.dataset.label + ': ' + formatRupiah(ctx.parsed.y);
+            const chart = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: buildDatasets(chartData, filterTipe),
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: labelColor, font: { size: 12 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    return ' ' + ctx.dataset.label + ': ' + formatRupiah(ctx.parsed.y);
+                                },
                             },
                         },
                     },
-                },
-                scales: {
-                    x: {
-                        stacked: false,
-                        grid: { color: gridColor },
-                        ticks: { color: labelColor, font: { size: 11 } },
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: gridColor },
-                        ticks: {
-                            color: labelColor,
-                            font: { size: 11 },
-                            callback: function (value) { return formatRupiah(value); },
+                    scales: {
+                        x: { stacked: false, grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 11 } } },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: labelColor, font: { size: 11 }, callback: function (v) { return formatRupiah(v); } },
                         },
                     },
                 },
-            },
-        });
+            });
 
-        canvas._chartInstance = chart;
+            canvas._chartInstance = chart;
+        });
     }
 
     if (document.readyState === 'loading') {

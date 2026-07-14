@@ -90,6 +90,10 @@
                             $cartQty   = $inCart ? $cart[$product->id]['qty'] : 0;
                             $maxStock  = $product->stock;
                             $atMax     = $inCart && $cartQty >= $maxStock;
+                            $catColors = ['makanan' => '#f97316', 'minuman' => '#0ea5e9', 'perlengkapan' => '#8b5cf6'];
+                            $catLabels = ['makanan' => 'Makanan', 'minuman' => 'Minuman', 'perlengkapan' => 'Perlengkapan'];
+                            $catColor  = $catColors[$product->category] ?? '#64748b';
+                            $catLabel  = $catLabels[$product->category] ?? $product->category;
                         @endphp
                         <button
                             wire:click="addToCart({{ $product->id }})"
@@ -114,7 +118,13 @@
                             <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400">
                                 Rp {{ number_format($product->price, 0, ',', '.') }}
                             </p>
-                            <p class="text-xs text-slate-400">Stok: {{ $product->stock }}</p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs text-slate-400">Stok: {{ $product->stock }}</p>
+                                <span class="rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+                                      style="background: {{ $catColor }}20; color: {{ $catColor }};">
+                                    {{ $catLabel }}
+                                </span>
+                            </div>
                         </button>
                     @endforeach
                 </div>
@@ -450,9 +460,23 @@
                                 >
                                     <div class="flex items-center justify-between gap-3">
                                         <div class="flex items-center gap-3">
-                                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-red-400 to-rose-600 text-xs font-bold text-white shadow-sm select-none">
-                                                {{ strtoupper(substr($team->name, 0, 2)) }}
-                                            </div>
+                                            @php
+                                                $dendaLogoUrl = $team->logo
+                                                    ? (str_starts_with($team->logo, 'http://') || str_starts_with($team->logo, 'https://')
+                                                        ? $team->logo
+                                                        : (str_starts_with($team->logo, 'public/')
+                                                            ? '/storage/' . str_replace('public/', '', $team->logo)
+                                                            : '/storage/' . $team->logo))
+                                                    : null;
+                                            @endphp
+                                            @if ($dendaLogoUrl)
+                                                <img src="{{ $dendaLogoUrl }}" alt="{{ $team->name }}"
+                                                     class="h-9 w-9 shrink-0 rounded-full object-cover shadow-sm" />
+                                            @else
+                                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-red-400 to-rose-600 text-xs font-bold text-white shadow-sm select-none">
+                                                    {{ strtoupper(substr($team->name, 0, 2)) }}
+                                                </div>
+                                            @endif
                                             <div>
                                                 <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ $team->name }}</p>
                                                 @if ($team->invoice_number)

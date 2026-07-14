@@ -18,8 +18,13 @@ class PosProductManagement extends Component
 
     public string $search = '';
 
+    /** Filter kategori: '' = semua, 'makanan'|'minuman'|'perlengkapan' */
+    public string $categoryFilter = '';
+
     // Shared form fields for create & edit
     public string $formProductName = '';
+
+    public string $formCategory = 'makanan';
 
     public string $formPrice = '';
 
@@ -37,6 +42,11 @@ class PosProductManagement extends Component
     public string $deletingProductName = '';
 
     public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCategoryFilter(): void
     {
         $this->resetPage();
     }
@@ -62,6 +72,7 @@ class PosProductManagement extends Component
 
         $this->editingProductId = $productId;
         $this->formProductName = $product->product_name;
+        $this->formCategory = $product->category;
         $this->formPrice = (string) $product->price;
         $this->formStock = $product->stock;
 
@@ -82,6 +93,7 @@ class PosProductManagement extends Component
 
         $data = [
             'product_name' => $validated['formProductName'],
+            'category' => $validated['formCategory'],
             'price' => $validated['formPrice'],
             'stock' => $validated['formStock'],
         ];
@@ -137,8 +149,13 @@ class PosProductManagement extends Component
                 $this->search,
                 fn ($q) => $q->where('product_name', 'like', "%{$this->search}%")
             )
+            ->when(
+                $this->categoryFilter,
+                fn ($q) => $q->where('category', $this->categoryFilter)
+            )
+            ->orderBy('category')
             ->orderBy('product_name')
-            ->paginate(10);
+            ->paginate(48); // cukup besar agar groupBy di blade bekerja dalam satu halaman
 
         return view('livewire.admin.pos-product-management', compact('products'));
     }
@@ -150,6 +167,7 @@ class PosProductManagement extends Component
     private function resetForm(): void
     {
         $this->formProductName = '';
+        $this->formCategory = 'makanan';
         $this->formPrice = '';
         $this->formStock = 0;
         $this->editingProductId = null;
@@ -163,6 +181,7 @@ class PosProductManagement extends Component
     {
         return [
             'formProductName' => ['required', 'string', 'max:100'],
+            'formCategory' => ['required', 'in:makanan,minuman,perlengkapan'],
             'formPrice' => ['required', 'numeric', 'gt:0'],
             'formStock' => ['required', 'integer', 'min:0'],
         ];
@@ -176,6 +195,8 @@ class PosProductManagement extends Component
         return [
             'formProductName.required' => 'Nama produk wajib diisi.',
             'formProductName.max' => 'Nama produk maksimal 100 karakter.',
+            'formCategory.required' => 'Kategori wajib dipilih.',
+            'formCategory.in' => 'Kategori tidak valid.',
             'formPrice.required' => 'Harga wajib diisi.',
             'formPrice.numeric' => 'Harga harus berupa angka.',
             'formPrice.gt' => 'Harga harus lebih dari 0.',

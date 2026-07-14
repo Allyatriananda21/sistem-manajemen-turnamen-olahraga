@@ -139,109 +139,103 @@
 
         {{-- ── FULL TABLE ── --}}
         <flux:card class="secondary-card overflow-hidden p-0 bg-[#E4FD97] border-[#c8e87d]">
-
-            {{-- Table header --}}
-            <div class="grid grid-cols-[2.5rem_1fr_2rem_2rem_2rem_2rem_3rem_3.5rem] items-center gap-0 border-b border-[#c8e87d]/60 px-4 py-2.5 dark:border-[rgba(228,253,151,0.12)]">
-                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">#</span>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">Tim</span>
-                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">M</span>
-                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-green-600/70">W</span>
-                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">D</span>
-                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-red-500/70">L</span>
-                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">GD</span>
-                <span class="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">PTS</span>
-            </div>
-
-            {{-- Rows --}}
-            <div class="divide-y divide-[#c8e87d]/40 dark:divide-[rgba(228,253,151,0.08)]">
-                @foreach ($this->standings as $rank => $standing)
-                    @php
-                        $position = $rank + 1;
-                        $isTop = $position <= 3;
-                    @endphp
-                    <div wire:key="standing-{{ $standing->id }}"
-                         class="grid grid-cols-[2.5rem_1fr_2rem_2rem_2rem_2rem_3rem_3.5rem] items-center gap-0 px-4 py-3 transition-colors duration-100 hover:bg-[#d8f57a]/30 dark:hover:bg-white/5
-                            {{ $position === 1 ? 'bg-amber-50/60 dark:bg-amber-900/10' : '' }}">
-
-                        {{-- Rank --}}
-                        <div class="flex justify-center">
-                            @if ($position === 1)
-                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-[10px] font-black text-white shadow-sm">1</span>
-                            @elseif ($position === 2)
-                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 dark:bg-slate-600 text-[10px] font-black text-slate-700 dark:text-white">2</span>
-                            @elseif ($position === 3)
-                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-600/70 text-[10px] font-black text-white">3</span>
-                            @else
-                                <span class="text-xs font-medium text-[#1e2b1d]/40 dark:text-white/30">{{ $position }}</span>
-                            @endif
-                        </div>
-
-                        {{-- Tim --}}
-                        <div class="flex min-w-0 items-center gap-2.5">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-[#c8e87d]/60 dark:border-[rgba(228,253,151,0.12)]">
+                            <th class="w-10 px-4 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">#</th>
+                            <th class="px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">Tim</th>
+                            <th class="px-3 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">Main</th>
+                            <th class="px-3 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-green-600/70">Menang</th>
+                            <th class="px-3 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">Seri</th>
+                            <th class="px-3 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-red-500/70">Kalah</th>
+                            <th class="px-3 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-[#4a7c30]/60 dark:text-[#E4FD97]/40">+/-</th>
+                            <th class="px-4 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Poin</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#c8e87d]/40 dark:divide-[rgba(228,253,151,0.08)]">
+                        @foreach ($this->standings as $rank => $standing)
                             @php
-                                $rowLogoUrl = $standing->team->logo
-                                    ? (str_starts_with($standing->team->logo, 'http://') || str_starts_with($standing->team->logo, 'https://')
-                                        ? $standing->team->logo
-                                        : (str_starts_with($standing->team->logo, 'public/')
-                                            ? '/storage/' . str_replace('public/', '', $standing->team->logo)
-                                            : '/storage/' . $standing->team->logo))
-                                    : null;
+                                $position = $rank + 1;
+                                $gd = $standing->goal_diff;
                             @endphp
-                            @if ($rowLogoUrl)
-                                <img src="{{ $rowLogoUrl }}" alt="{{ $standing->team->name }}"
-                                     class="h-7 w-7 shrink-0 rounded-lg object-cover shadow-sm" />
-                            @else
-                                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 text-[10px] font-bold text-white shadow-sm select-none">
-                                    {{ strtoupper(substr($standing->team->name, 0, 2)) }}
-                                </div>
-                            @endif
-                            <span class="truncate text-sm font-semibold text-[#1e2b1d] dark:text-white">
-                                {{ $standing->team->name }}
-                            </span>
-                        </div>
+                            <tr wire:key="standing-{{ $standing->id }}"
+                                class="transition-colors duration-100 hover:bg-[#d8f57a]/30 dark:hover:bg-white/5
+                                    {{ $position === 1 ? 'bg-amber-50/60 dark:bg-amber-900/10' : '' }}">
 
-                        {{-- M --}}
-                        <span class="text-center text-sm tabular-nums text-[#1e2b1d]/60 dark:text-slate-400">{{ $standing->played }}</span>
+                                {{-- Rank --}}
+                                <td class="w-10 px-4 py-3 text-center">
+                                    @if ($position === 1)
+                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-[10px] font-black text-white shadow-sm">1</span>
+                                    @elseif ($position === 2)
+                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 dark:bg-slate-600 text-[10px] font-black text-slate-700 dark:text-white">2</span>
+                                    @elseif ($position === 3)
+                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-600/70 text-[10px] font-black text-white">3</span>
+                                    @else
+                                        <span class="text-xs font-medium text-[#1e2b1d]/40 dark:text-white/30">{{ $position }}</span>
+                                    @endif
+                                </td>
 
-                        {{-- W --}}
-                        <span class="text-center text-sm tabular-nums font-semibold text-green-600 dark:text-green-400">{{ $standing->win }}</span>
+                                {{-- Tim --}}
+                                <td class="px-4 py-3">
+                                    <div class="flex min-w-0 items-center gap-2.5">
+                                        @php
+                                            $rowLogoUrl = $standing->team->logo
+                                                ? (str_starts_with($standing->team->logo, 'http://') || str_starts_with($standing->team->logo, 'https://')
+                                                    ? $standing->team->logo
+                                                    : (str_starts_with($standing->team->logo, 'public/')
+                                                        ? '/storage/' . str_replace('public/', '', $standing->team->logo)
+                                                        : '/storage/' . $standing->team->logo))
+                                                : null;
+                                        @endphp
+                                        @if ($rowLogoUrl)
+                                            <img src="{{ $rowLogoUrl }}" alt="{{ $standing->team->name }}"
+                                                 class="h-7 w-7 shrink-0 rounded-lg object-cover shadow-sm" />
+                                        @else
+                                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 text-[10px] font-bold text-white shadow-sm select-none">
+                                                {{ strtoupper(substr($standing->team->name, 0, 2)) }}
+                                            </div>
+                                        @endif
+                                        <span class="truncate text-sm font-semibold text-[#1e2b1d] dark:text-white">
+                                            {{ $standing->team->name }}
+                                        </span>
+                                    </div>
+                                </td>
 
-                        {{-- D --}}
-                        <span class="text-center text-sm tabular-nums text-[#1e2b1d]/50 dark:text-slate-500">{{ $standing->draw }}</span>
+                                {{-- Main --}}
+                                <td class="px-3 py-3 text-center text-sm tabular-nums text-[#1e2b1d]/60 dark:text-slate-400">{{ $standing->played }}</td>
 
-                        {{-- L --}}
-                        <span class="text-center text-sm tabular-nums font-semibold text-red-500 dark:text-red-400">{{ $standing->lose }}</span>
+                                {{-- Menang --}}
+                                <td class="px-3 py-3 text-center text-sm tabular-nums font-semibold text-green-600 dark:text-green-400">{{ $standing->win }}</td>
 
-                        {{-- GD --}}
-                        @php $gd = $standing->goal_diff; @endphp
-                        <span class="text-center text-sm tabular-nums font-medium
-                            {{ $gd > 0 ? 'text-green-600 dark:text-green-400' : ($gd < 0 ? 'text-red-500 dark:text-red-400' : 'text-[#1e2b1d]/40 dark:text-white/30') }}">
-                            {{ $gd > 0 ? '+' . $gd : $gd }}
-                        </span>
+                                {{-- Seri --}}
+                                <td class="px-3 py-3 text-center text-sm tabular-nums text-[#1e2b1d]/50 dark:text-slate-500">{{ $standing->draw }}</td>
 
-                        {{-- PTS --}}
-                        <div class="flex justify-center">
-                            <span class="inline-flex items-center justify-center rounded-lg px-2 py-0.5 text-sm font-bold tabular-nums
-                                {{ $position === 1 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-[#1e2b1d]/10 text-[#1e2b1d] dark:bg-white/10 dark:text-white' }}">
-                                {{ $standing->points }}
-                            </span>
-                        </div>
+                                {{-- Kalah --}}
+                                <td class="px-3 py-3 text-center text-sm tabular-nums font-semibold text-red-500 dark:text-red-400">{{ $standing->lose }}</td>
 
-                    </div>
-                @endforeach
+                                {{-- Selisih Gol --}}
+                                <td class="px-3 py-3 text-center text-sm tabular-nums font-medium
+                                    {{ $gd > 0 ? 'text-green-600 dark:text-green-400' : ($gd < 0 ? 'text-red-500 dark:text-red-400' : 'text-[#1e2b1d]/40 dark:text-white/30') }}">
+                                    {{ $gd > 0 ? '+' . $gd : $gd }}
+                                </td>
+
+                                {{-- Poin --}}
+                                <td class="px-4 py-3 text-center">
+                                    <span class="inline-flex items-center justify-center rounded-lg px-2.5 py-0.5 text-sm font-bold tabular-nums
+                                        {{ $position === 1 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-[#1e2b1d]/10 text-[#1e2b1d] dark:bg-white/10 dark:text-white' }}">
+                                        {{ $standing->points }}
+                                    </span>
+                                </td>
+
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-
         </flux:card>
 
-        {{-- Legend --}}
-        <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-[#1e2b1d]/50 dark:text-slate-500">
-            <span><strong class="text-[#4a7c30] dark:text-[#E4FD97]/70">M</strong> = Main</span>
-            <span><strong class="text-green-600">W</strong> = Menang</span>
-            <span><strong class="text-[#4a7c30] dark:text-[#E4FD97]/70">D</strong> = Seri</span>
-            <span><strong class="text-red-500">L</strong> = Kalah</span>
-            <span><strong class="text-[#4a7c30] dark:text-[#E4FD97]/70">GD</strong> = Selisih Gol</span>
-            <span><strong class="text-indigo-600 dark:text-indigo-400">PTS</strong> = Poin</span>
-        </div>
+
 
     @endif
 
